@@ -1,3 +1,5 @@
+package Game;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -77,6 +79,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.FloatControl;
+
+import Scenes.*;
 
 public class Game {
 
@@ -228,7 +232,7 @@ public class Game {
 	public static MiddleDisplay currentMiddleDisplay = MiddleDisplay.NEWDAY;
 	public static MiddleDisplay lastMiddleDisplay = MiddleDisplay.NEWDAY;
 	
-	static Playthrough currentPlaythrough = null;
+	public static Playthrough currentPlaythrough = null;
 	static Game currentGame = null;
 	static SpotMenu currentSpotMenu = null;
 	static JList<Spot> currentSpotList = null;
@@ -269,7 +273,7 @@ public class Game {
 	static BigInteger simulatedHealth = Game.TEN_THOUSAND;
 	static BigInteger simulatedSanity = new BigInteger("100");
 	static BigInteger simulatedQi = new BigInteger("100");
-	static BigInteger[] simulatedRelationships = new BigInteger[21];
+	public static BigInteger[] simulatedRelationships = new BigInteger[21];
 	static BigInteger[] simulatedAttributes = new BigInteger[21];
 	static BigInteger[] simulatedGoals = new BigInteger[Game.totalGoals];
     static boolean startingRomance = false;
@@ -1436,7 +1440,7 @@ public class Game {
 				EVERYDAYACTION.availableDays, 
 				27, 2),
 		
-		GAMEDESIGN("Game design", BigInteger.valueOf(5000), 
+		GAMEDESIGN("Game design", BigInteger.valueOf(5000),
 				new Goal("Release a game", 26, MILLION,
 						"+10 Meaning of Life", 
 						"Gain some Meaning of Life"), 
@@ -1909,7 +1913,7 @@ public class Game {
 				new boolean[]{true, false, true, false, true, false, true}),
 		THAT("that", thousand.negate(), null, 1, 2, 1, 
 				new boolean[]{false, true, false, true, false, true, true}),
-		ANOTHERTHING("another thing", thousand, new Goal("be super derpy", 2, thousand, "another thing has been done!"), 2, -1, 2, 
+		ANOTHERTHING("another thing", thousand, new Goal("be super derpy", 2, thousand, "another thing has been done!"), 2, -1, 2,
 				new boolean[]{true, false, true, false, true, false, true}),
 		
 		FOO("foo", thousand, null, -1, 3, 3, 
@@ -1941,7 +1945,7 @@ public class Game {
 		final int relationship;
 		final int attribute;
 		
-		final BigInteger baseCost;
+		public final BigInteger baseCost;
 		final int availableSlot;
 		final boolean[] availableDays;
 		final int requiredGoal;
@@ -3695,45 +3699,26 @@ public class Game {
 			colors = new Color[0];
 			bolds = new boolean[0];
 		}
-		
+
+        /**
+         * Checks for equality by comparing the contents of this WindowContents to another.
+         * @param other The other WindowContents to compare
+         * @return True if both contain the same contents, otherwise false.
+         */
+        public boolean equals(WindowContents other) {
+            return other != null
+                    && Arrays.equals(texts, other.texts)
+                    && Arrays.equals(colors, other.colors)
+                    && Arrays.equals(bolds, other.bolds);
+        }
 	}
 	
-	public static class Scene implements Serializable {
-		public static final long serialVersionUID = 4L;
-		
-		boolean loopEnd;
-        boolean dayEnd = false;
-		int associatedGoalIndex;
-		int associatedGoalTier;
-		PlotEvent associatedEvent;
-		
-		WindowContents[] screens = new WindowContents[0];
-		String[] backgrounds = new String[0];
-		String[][] characters = new String[0][0];
-		String[][] outfits = new String[0][0];
-		String[][] emotions = new String[0][0];
-		Music[] tracks = new Music[0];
-		Effect[] sounds = new Effect[0];
-		Modifier[][] modifiers = new Modifier[0][0];
-		
-		public Scene(int length) {
-			screens = new WindowContents[length];
-			backgrounds = new String[length];
-			characters = new String[length][0];
-			outfits = new String[length][0];
-			emotions = new String[length][0];
-			tracks = new Music[length];
-			sounds = new Effect[length];
-			modifiers = new Modifier[length][0];
-			
-			for (int i = 0; i < length; i++) {
-				screens[i] = new WindowContents();
-				backgrounds[i] = "";
-			}
-		}
-	}
+
 
 	public Game() {
+        if (currentGame != null) {
+            return;
+        }
 		/*GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	    String[] fontnames = e.getAvailableFontFamilyNames();
 	    for (String s : fontnames) {
@@ -6220,682 +6205,10 @@ public class Game {
 		if (p == null) {
 			return null;
 		}
-		//autoOn = false;
-        //skippingStory = false;
-		Scene result = null;
-		if (p == PlotEvent.ABDUCTIONMISSED) {
-			if (getGoalLevel(6, false) > 0) {
-				result = new Scene(8);
 
-				result.tracks[0] = Music.SILENCE;
-				result.backgrounds[0] = "dorm";
-				if (currentPlaythrough.weeklyActions[weekDayNumber()][5].baseCost.compareTo(BigInteger.ZERO) < 0) {
-					result.screens[0].attach("The next morning, you're woken up by a phone call.  ");
-				} else {
-					result.screens[0].attach("You get home as the sun begins to rise.  But before you can get settled in, you receive a phone call.  ");
-				}
-				result.screens[0].attach("It's " + DuMont() + ".  What could " + heShe(2) + " want to talk to you about?");
-
-				result.backgrounds[1] = "callingMansion";
-				result.characters[1] = new String[]{"", "dumont"};
-				result.emotions[1] = new String[]{"", "Sad"};
-				result.screens[1].attach("\"I have bad news.  You might want to sit down.\"\n\n", 2);
-				result.screens[1].attach("For " + himHer(2) + " to say that as soon as you pick up, it really must be something serious.\n\n");
-				result.screens[1].attach("\"It's about your friend, " + fullName(5) + ".\"\n\n", 2);
-				result.screens[1].attach("You've mentioned " + Tanaka() + " to " + DuMont() + " in passing before.  But why would " + DuMont() + " be calling you about " + himHer(5) + "?");
-
-				result.emotions[2] = new String[]{"", "Neutral"};
-				result.tracks[2] = Music.REPORTING;
-				result.screens[2].attach("\"On " + hisHer(5) + " way home from class yesterday, " + heShe(5) + " was abducted.\"\n\n", 2);
-				result.screens[2].attach("It takes a moment for " + DuMont() + "'s words to settle in.  " + Tanaka() + " had asked you to walk " + himHer(5) + " home yesterday.  ");
-				if (getGoalLevel(1, false) > 3) {
-					result.screens[2].attach("But with how much time you've been spending together lately, skipping one afternoon didn't seem like a big deal.\n\n");
-				} else if (getGoalLevel(1, false) == 3) {
-					result.screens[2].attach("But now that " + heShe(5) + "'s made it clear that " + heShe(5) + "'s not really interested in you, you didn't take " + himHer(5) + " seriously.\n\n");
-				} else {
-					result.screens[2].attach("But you've been busy with other things, so you didn't take " + himHer(5) + " up on it.\n\n");
-				}
-				result.screens[2].attach("\"Are you alright?\"\n\n", 2);
-				result.screens[2].attach("You're pretty sure that you're alright.  But what about " + Tanaka() + "?  Who took " + himHer(5) + "?  Are they demanding a ransom?");
-
-				result.emotions[3] = new String[]{"", "Uncomfy"};
-				result.screens[3].attach("\"There hasn't been any ransom demand.  The identity of the abductors is unknown.  I did hire somebody to look into it overnight...\"\n\n", 2);
-				result.screens[3].attach("And?\n\n");
-				result.screens[3].attach("\"It doesn't look good.  Whoever they were, they fled the country, and they probably took " + Tanaka() + " with them.  They could be anywhere in the world by now.  The police have already pretty much given up.\"\n\n", 2);
-				result.screens[3].attach("What about " + DuMont() + "?  Has " + heShe(2) + " given up?  Can " + heShe(2) + " hire some more investigators to try and track " + Tanaka() + " down?\n\n");
-				result.screens[3].attach("\"... I'm sorry.\"", 2);
-
-				result.emotions[4] = new String[]{"", "Sad"};
-				result.screens[4].attach("\"There are dozens of abductions every year in this city alone.  If I made a habit of trying to solve them all myself, then I'd have bankrupted myself years ago, and the two of us never would have met.\"\n\n", 2);
-				result.screens[4].attach("Then why is " + DuMont() + " even calling you about this?\n\n");
-				result.screens[4].attach("\"I just thought you should hear about it from me first.\"", 2);
-
-				result.emotions[5] = new String[]{"", "Uncomfy"};
-				result.screens[5].attach("Well, " + DuMont() + "'s help might not be necessary.  You're making some money of your own right now.  It's not even close to " + DuMont() + "'s fortune, but ");
-				if (getGoalLevel(1, false) > 3) {
-					result.screens[5].attach(Tanaka() + " needs your help.  ");
-				} else if (getGoalLevel(1, false) == 3) {
-					result.screens[5].attach("even if " + Tanaka() + " doesn't actually care about you, leaving " + himHer(5) + " at the mercy of whoever abducted " + himHer(5) + " would be pretty cold.  ");
-				} else {
-					result.screens[5].attach("leaving " + Tanaka() + " at the mercy of whoever abducted " + himHer(5) + " would be pretty cold.  ");
-				}
-				result.screens[5].attach("There ought to be something you can do.\n\n");
-				result.screens[5].attach("\"About that...  I can put you in touch with the same fixer I hired last night to look into the situation.  " + HeShe(3) + "'s already told me that " + heShe(3) + "'d be willing to continue " + hisHer(3) + " investigation for the right price.\"\n\n", 2);
-				result.screens[5].attach("If that price was too high for " + DuMont() + ", then it's hard to imagine that you'll be able to afford it anytime soon.\n\n");
-				result.screens[5].attach("\"I expect that the price " + heShe(3) + "'ll quote for you is quite a bit lower than the one " + heShe(3) + " quoted for me.\"", 2);
-
-				result.emotions[6] = new String[]{"", "Neutral"};
-				result.screens[6].attach("\"" + HeShe(3) + "'s a friend, and I've put my life in " + hisHer(3) + " hands more than once.  Frankly, I wouldn't recommend spending your savings chasing after someone who might already be beyond saving.  But if you're going to do it anyway, then you might as well use it to hire the person with the best chance of success.\"\n\n", 2);
-				result.screens[6].attach(DuMont() + " thinks you should just write " + Tanaka() + " off as a lost cause?\n\n");
-				result.screens[6].attach("\"You can't stop every tragedy.  It's important to focus your resources on the people you can actually save.\"", 2);
-
-				result.backgrounds[7] = "dorm";
-				result.characters[7] = new String[0];
-				result.screens[7].attach("You talk with " + DuMont() + " a bit more, and " + heShe(2) + " tells you everything " + heShe(2) + " was able to find out about the abduction.  " + DuMont() + " also gives you the contact information for the fixer.  Apparently " + heShe(3) + "'s a regular at " + DuMont() + "'s nightclub");
-				if (getAttributeLevel(2, false).compareTo(BigInteger.valueOf(3)) > 0) {
-					result.screens[7].attach(", and you probably already have enough money to get " + hisHer(3) + " attention.  It's up to you to decide whether to approach " + himHer(3) + ".\n\n");
-				} else {
-					result.screens[7].attach(", so as soon as you have the money, it'll be as simple as approaching " + himHer(3) + " there.\n\n");
-				}
-				result.screens[7].attach("Afterward, you lay down on your bed for awhile and think about " + Tanaka() + ".  What should you do now?");
-			} else {
-				result = new Scene(5);
-
-				result.tracks[0] = Music.SILENCE;
-				result.backgrounds[0] = "dorm";
-				if (currentPlaythrough.weeklyActions[weekDayNumber()][5].baseCost.compareTo(BigInteger.ZERO) < 0) {
-					result.screens[0].attach("The next morning, you're woken up by a phone call.  ");
-				} else {
-					result.screens[0].attach("You get home as the sun begins to rise.  But before you can get settled in, you receive a phone call.  ");
-				}
-				result.screens[0].attach("It's one of your acquaintances from " + Tanaka() + "'s group of admirers.  You aren't really close with " + himHer(-1) + ", so it's surprising to get a call like this.");
-
-				result.screens[1].attach(HeShe(-1) + " tells you what happened, but the words don't register at first.  It seems like this must just be some sort of stupid prank.  You almost hang up on " + himHer(-1) + ".\n\n");
-				result.screens[1].attach("But " + hisHer(-1) + " serious tone of voice eventually gets it across to you.  This isn't a joke.");
-
-				result.tracks[2] = Music.REPORTING;
-				result.screens[2].attach(Tanaka() + " was abducted on " + hisHer(5) + " way home from class yesterday.\n\n");
-				result.screens[2].attach(HeShe(5) + " had asked you to walk " + himHer(5) + " home.  ");
-				if (getGoalLevel(1, false) > 3) {
-					result.screens[2].attach("But with how much time you've been spending together lately, skipping one afternoon didn't seem like a big deal.\n\n");
-				} else if (getGoalLevel(1, false) == 3) {
-					result.screens[2].attach("But now that " + heShe(5) + "'s made it clear that " + heShe(5) + "'s not really interested in you, you didn't take " + himHer(5) + " seriously.\n\n");
-				} else {
-					result.screens[2].attach("But you've been busy with other things, so you didn't take " + himHer(5) + " up on it.\n\n");
-				}
-				result.screens[2].attach("Could you have stopped this from happening?");
-
-				result.screens[3].attach("Apparently " + Tanaka() + "'s admirers are all going to pool their resources and try to hire a private investigator or something to track " + himHer(5) + " down.  There's been some talk of searching online, or perhaps even using the dark web, but their consensus is that it'd be better to meet someone face-to-face in order to judge whether they seem competent and trustworthy enough.  And fortunately, there seems to be a good place to do just that.\n\n");
-				result.screens[3].attach("Over on the bad side of town, there's a nightclub which is known as a notorious gathering hub for individuals who operate in the gray areas of the law.  It wouldn't even be surprising if the people who abducted " + Tanaka() + " were actually regulars there.  In order to catch them, it might be necessary to descend to their level.");
-
-				result.screens[4].attach("At this moment, some of " + Tanaka() + "'s most fervent fans are emptying their bank accounts and taking out loans.  You don't really have the financial leverage to do something like that.  But now that you know where everybody will be gathering, maybe there's some other way for you to help.");
-			}
-            result.dayEnd = true;
-		} else if (p == PlotEvent.COLLEGETOWNDESTRUCTION) {
-			result = new Scene(10);
-			result.loopEnd = true;
-
-			result.tracks[0] = Music.SILENCE;
-			result.backgrounds[0] = "black";
-			if (currentPlaythrough.weeklyActions[(weekDayNumber()+6)%7][5] != null && currentPlaythrough.weeklyActions[(weekDayNumber()+6)%7][5].baseCost.compareTo(BigInteger.ZERO) < 0) {
-				result.screens[0].attach("You sleep well, full of plans for tomorrow.  But unbeknownst to you, fate has something else in store.  By the time you wake up, it's already too late.\n\n");
-			} else {
-				result.screens[0].attach("You stay up through the night, working to achieve what's important to you.  But unbeknownst to you, fate has something else in store.  By the time the sun comes up, it's already too late.\n\n");
-			}
-			result.screens[0].attach("As you walk down the street, a sudden commotion catches your attention.  When you follow everyone's gaze toward the horizon, it's plain to see why.  The dark shape rising up above the skyline is beyond your comprehension.\n\n");
-			result.screens[0].attach("What is it?  Some sort of atmospheric phenomenon?  An optical illusion?  It's hard to believe that something so large could be a real, physical entity.");
-
-			result.screens[1].attach("And it keeps growing.  Or maybe it's just getting closer.\n\n");
-			result.screens[1].attach("The people around you are beginning to panic and run for cover, but you find yourself entranced.  You can't help but try to wrap your head around whatever it is you're seeing.  It's hard to tell at this distance, but it seems to be mechanical in nature.\n\n");
-			result.screens[1].attach("As you watch, lines of brilliant lights along the structure flare to life.");
-
-			result.sounds[2] = Effect.GROWL;
-			result.backgrounds[2] = "elohim2";
-			result.screens[2].attach("It's a ship.  That seems to be the best way to describe it.  A ship that's even larger than a city.\n\n");
-			result.screens[2].attach("Who could have made something at such a large scale?  And for what purpose?  What's it doing here?\n\n");
-			result.screens[2].attach("The glowing lines along the sides of the ship grow brighter, and a possible answer enters your head.  Are those some sort of weapon?");
-
-			result.sounds[3] = Effect.EXPLOSION;
-			result.backgrounds[3] = "elohim3";
-			result.screens[3].attach("They are.  Bright beams of light lance down toward the skyline below.  But before they can strike, something intercepts them.\n\n");
-			result.screens[3].attach("You can only describe it as a force field.  At least the giant ship is understandable as something that could be built with a big enough investment of industrial effort.  But this is on another level entirely.  ");
-			if (getGoalLevel(18, false) > 0) {
-				result.screens[3].attach("The energy shield is clearly centered around The Tower, but even with everything " + Heilig() + " has said about the advanced technology there, it's hard to believe that projecting some sort of hard light dome around the city is something they can do.\n\n");
-			} else {
-				result.screens[3].attach("It seems like you've gotten yourself caught in the middle of a war where both sides have access to some incredible technology.\n\n");
-			}
-			result.screens[3].attach("Whatever's actually going on here, it looks like you'll at least be safe for the moment.");
-
-			result.sounds[4] = Effect.EXPLOSION;
-			result.backgrounds[4] = "elohim2";
-			result.screens[4].attach("But then, with the next blast from the huge ship, the energy shield flickers and fails.  Maybe you aren't safe at all.\n\n");
-			result.screens[4].attach("It's only now that you realize that watching the clash between these advanced technologies was probably not the most mindful use of your time.  Was there something else you could have done to prepare for what's about to happen next?\n\n");
-			result.screens[4].attach("By now, it's too late.  The lines of energy alongside the ship begin to brighten one more time.");
-
-			result.sounds[5] = Effect.EXPLOSION;
-			result.backgrounds[5] = "black";
-			result.screens[5].attach("This time, they score a direct hit on the city.  The shockwave spreads outward, causing the buildings to collapse like a house of cards.  A rumble from up above is the only warning you have before you're caught up in the destruction.\n\n");
-			result.screens[5].attach("A heavy impact knocks you down to the ground.");
-
-			result.screens[6].attach("You briefly lose consciousness.  When you wake up, you find that you're trapped.  Everything is dark.  When you try to move your arms, they're blocked by layers of broken concrete.\n\n");
-			result.screens[6].attach("But you can't just stay here and wait for rescue.  You can feel water flowing from a broken pipe or something, running down your torso and pooling around your legs.  If you don't get out of here now, then you might drown.\n\n");
-			result.screens[6].attach("However, when you try to sit up, a white-hot spike of pain shoots through your whole body, and you start to choke on the water that abruptly starts to gush into your mouth.  It has an awful, metallic taste.\n\n");
-			result.screens[6].attach("That's what makes you realize that it's not some broken water pipe that's soaking you.  It's your own blood.");
-
-			result.screens[7].attach("You realize that you're going to die.  ");
-			if (dietRoutine() == RoutineElements.CANCERJUICE) {
-				result.screens[7].attach("Even 'cancer juice' can't save you from this kind of catastrophic damage.  You're feeling hotter and hotter, steam beginning to rise from your wounds.\n\n");
-				result.screens[7].attach(Heilig() + " warned you about this.  When an injury is bad enough, the waste heat from the nanomachines trying to repair your body becomes so intense that it causes burns.  And as they try to repair the burns, they'll grow even hotter and cause more burns in turn.\n\n");
-				result.screens[7].attach("At least you'll probably pass out from blood loss before you burst into flames.  Already, you can feel your consciousness starting to grow hazy.");
-			} else {
-				result.screens[7].attach("With how the pain in your torso is starting to build up, maybe that's a mercy.  In the moment before you lost consciousness, you saw tons upon tons of debris falling toward you.  It's probably better to bleed out quickly than to slowly die of suffocation or starvation.\n\n");
-				result.screens[7].attach("And yet you can't help but try to think of something you could do to stem the bleeding and survive long enough to be rescued.  It isn't easy to give up.\n\n");
-				result.screens[7].attach("But it's futile.  Your legs won't listen to you, your arms are pinned in place, and your consciousness is beginning to grow hazy.");
-			}
-
-			result.screens[8].attach("You find yourself wondering whether anyone else was lucky enough to avoid getting killed like this.  " + Yumeno() + " was probably too busy gaming to even notice that anything was happening before the blast hit.  And... this is a weekend, so " + Hashimoto() + " was probably sleeping.  It's unlikely that either of them had a chance to escape.\n\n");
-			if (getGoalLevel(6, false) > 0) {
-				result.screens[8].attach("What about " + DuMont() + "?  " + HisHer(2) + " mansion is some distance from the city center.  ");
-				if (getGoalLevel(13, false) > 0 || getGoalLevel(21, false) > 0) {
-					result.screens[8].attach("And " + Jackal() + "?  " + HeShe(3) + "'s good at thinking on " + hisHer(3) + " feet.  ");
-					if (simulatedRelationships[4].compareTo(BigInteger.ZERO) > 0) {
-						result.screens[8].attach("And " + Heilig() + "...  The Tower seemed to be prepared for this.  ");
-					}
-					result.screens[8].attach("Hopefully they managed to get away.\n\n");
-				} else {
-					result.screens[8].attach("Hopefully " + heShe(2) + " managed to get away.\n\n");
-				}
-			}
-			if (currentPlaythrough.personStatus[5] == Locale.COLLEGETOWN) {
-				result.screens[8].attach("And " + Tanaka() + "...  Maybe it would have been better to let " + himHer(5) + " be abducted.  What an absurd thought.");
-			} else if (getGoalLevel(28, false) > 0) {
-				result.screens[8].attach("At least you know that " + Tanaka() + " is relatively safe.  Maybe it's lucky that " + heShe(5) + " got abducted after all.");
-			} else if (getGoalLevel(14, false) > 0) {
-				result.screens[8].attach("And " + Tanaka() + "...  You were so close to being able to rescue " + himHer(5) + ".  But at least you know that " + heShe(5) + " wasn't caught up in this.");
-			} else {
-				result.screens[8].attach("Is " + Tanaka() + " safe?");
-			}
-
-			result.screens[9].attach("In any case, it's all out of your hands now.  There's nothing more you can do.  It's an oddly comforting thought.  You finally get to rest.");
-		} else if (p == PlotEvent.HELINTRO) {
-			result = new Scene(5);
-			result.loopEnd = true;
-
-			result.backgrounds[0] = "black";
-			result.screens[0].attach("You wake up in an unfamiliar place.  Wherever it is, your limbs are still immobilized.  In fact, you can't feel your body at all.\n\n");
-			result.screens[0].attach("Wait, 'still' immobilized?  Were they immobilized before?  What were you doing, just now?  Something about... a crash?  An explosion?  Your memories are disorganized, and you can't find what you're looking for.\n\n");
-			result.screens[0].attach("Somehow, you can't make your mind work.  When you have questions, you should be able to reason your way toward the answers.  But when you try to do that, everything seems to halt up, and you end up right back where you started.");
-
-			result.characters[1] = new String[]{"hel"};
-			result.outfits[1] = new String[]{"Shadowed"};
-			result.emotions[1] = new String[]{"Grin"};
-			result.modifiers[1] = new Modifier[]{Modifier.CLOSEUP};
-			result.screens[1].attach("You realize that you're not alone here.\n\n");
-			result.screens[1].attach("\"As I thought, you lived there as well.  Good.  This means that I don't need to change my established pattern.\"\n\n", 12);
-			result.screens[1].attach("Is " + heShe(12) + " expecting you to answer?  You don't think you have a mouth right now.  For that matter, you aren't even sure if you have ears.  Instead of 'hearing' " + hisHer(12) + " voice, it feels more like someone else's thoughts are echoing inside your mind.");
-
-			result.modifiers[2] = new Modifier[]{Modifier.CLOSEUP};
-			result.emotions[2] = new String[]{"Grin"};
-			result.screens[2].attach("\"This way, you should need no further encouragement.  You'll have more reason than most to be dissatisfied with how things always turn out.\"\n\n", 12);
-			result.screens[2].attach("Is " + heShe(12) + "... happy?  Angry?  You don't have eyes, either, but you can tell.  " + HeShe(12) + "'s speaking through clenched teeth.\n\n");
-			result.screens[2].attach("\"I will place my hopes on your shoulders.\"", 12);
-
-			result.modifiers[3] = new Modifier[]{Modifier.CLOSEUP};
-			result.emotions[3] = new String[]{"Grin"};
-			result.screens[3].attach(HeShe(12) + "'s expecting something from you?  Why?  You don't even have a body anymore.  You're dead.  You can rest now.\n\n");
-			result.screens[3].attach("\"Yes, I was right to choose you.  I think we'll get along quite well.  Do you want to rest?  Do you want to have peace?\"", 12);
-
-			result.modifiers[4] = new Modifier[]{Modifier.CLOSEUP};
-			result.emotions[4] = new String[]{"Grin"};
-			result.screens[4].attach("\"Then wake up!  Cast aside the illusion of your humanity!  Slay the gods of this world!  Every last one of us!\"", 12);
-		} else if (p == PlotEvent.METROPOLISINVASION) {
-			result = new Scene(9);
-			result.loopEnd = true;
-
-            result.backgrounds[0] = "black";
-            if (getGoalLevel(28, true) > 0) {
-                result.screens[0].attach("It's December 28th, the last day before the Lunar Syndicate's planned coup.  In the end, you weren't able to finalize a foolproof plan for " + Tanaka() + " to fake " + hisHer(5) + " own death, but ");
-                if (getGoalLevel(1, true) >= 4) {
-                    result.screens[0].attach(heShe(5) + " still seems to have been bolstered by the knowledge that " + Artemis() + " shouldn't be able to find you, let alone retaliate against you, even if " + heShe(17) + " does find out about " + Tanaka() + "'s desertion.  ");
-                } else {
-                    result.screens[0].attach(heShe(5) + " says that you really helped " + himHer(5) + " work up the courage to go through with the idea.  ");
-                }
-                result.screens[0].attach(HeShe(5) + " plans to just keep " + hisHer(5) + " eyes open and look for an opportunity to slip away from the Syndicate during the fighting.\n\n");
-                result.screens[0].attach("As for your part, it's time to leave the city.  " + Tanaka() + " will have an easier time escaping if " + heShe(5) + " doesn't have a non-Syndicate civilian like you accompanying " + himHer(5) + ".  Your things are already packed, and you and " + Tanaka() + " have planned a rendezvous point a few towns away.  All that's left is to rent a car and load it with your luggage.\n\n");
-            } else {
-                result.screens[0].attach("As far as you knew, this was just supposed to be another regular day.  You had planned on going about your regular business, looking forward to a new year in this new city, continuing your meteoric rise to wealth and success\n\n");
-            }
-            result.screens[0].attach("But before the sun has even completely risen, the sound of distant explosions tells you that something has gone horribly wrong.");
-
-            result.backgrounds[1] = "coup";
-            result.tracks[1] = Music.SILENCE;
-            result.screens[1].attach("The city is under attack.  Foreign soldiers and their war machines move through the streets, clearing each building in turn.  Members of the local police and military are disarmed and taken into custody, along with other 'persons of interest' and anybody unable to present their identification to the soldiers.  The entire city is being locked down.\n\n");
-            if (getGoalLevel(28, true) > 0) {
-                result.screens[1].attach("Without a doubt, this is the coup that was supposed to happen on the 30th.  Was " + Artemis() + "'s information wrong?");
-
-                result.screens[2].attach("You don't have time for idle questions.  ");
-            } else {
-                result.screens[1].attach("This is obviously some sort of coup.  The soldiers' vehicles are equipped with loudspeakers which broadcast an announcement that they're here to assist the 'legitimate' government in keeping the peace.  The message is spoiled somewhat by the sounds of sporadic gunfire echoing across the city.");
-
-                result.screens[2].attach("It shouldn't have anything to do with you, but unfortunately, you're in the wrong place at the wrong time.  ");
-            }
-            result.screens[2].attach("By the time you realize what's happening, there are already soldiers on the street outside.  If you try to go outside and make a run for freedom, you'll just be shot.  You can only wait helplessly until they make their way to your building.\n\n");
-            result.screens[2].attach("When the soldiers arrive, they check your papers and immediately find them suspicious.  Because you're such a recent arrival to this city, there's not much to prove that you're really who you say you are.  It must look like you're hiding your true identity.\n\n");
-            result.screens[2].attach("They take you at gunpoint to a makeshift detention center.");
-
-            result.backgrounds[3] = "black";
-            result.screens[3].attach("As you wait for them to realize that you're no threat to the new regime, the days turn into weeks and then months.");
-
-            result.screens[4].attach("The conditions in the detention center are poor.  You don't get much food, and they make the prisoners perform hard labor in order to keep them too busy to plot escape.  The soldiers keeping watch seem to lack a sense of empathy, and because you're a foreigner, even the other prisoners are reluctant to talk with you.\n\n");
-            result.screens[4].attach("All the while, you hear scattered rumors about what's happening outside.  It sounds like the whole world is being engulfed by war.  Entire cities are being wiped off the map.  As long as you're stuck in here, you have no way of verifying which of those rumors are fact and which are fiction.\n\n");
-            result.screens[4].attach("But you're smart and strong.  It doesn't take long before you start to pick up the language of the invaders as well.  You're able to build a stockpile of improvised tools in an out-of-the-way corner of the detention camp.  A plan to break out begins to come together.");
-
-            result.screens[5].attach("However, one day, you wake to find that your body is no longer obeying your commands.  You open your eyes, but all you can see is darkness.\n\n");
-            result.screens[5].attach("At first, the soldiers just think that you're pretending to be sick in order to get out of your daily hard labor.  But it soon becomes clear that you really do lack the strength to even lift your head.  After a discussion with their superiors, they decide to throw you in a solitary cell and just wait to see if you recover on your own.\n\n");
-            result.screens[5].attach("One soldier grabs you by the shoulders and another grabs you by the feet, and together, they haul you to the other side of the detention center.");
-
-            result.screens[6].attach("\"Another one dying of exhaustion?  If we're gonna work 'em all to death, it'd make more sense to just shoot 'em and get it over with.\"\n\n");
-            result.screens[6].attach("\"No, it's definitely not exhaustion.  I saw this one in the work yard the other day, " + heShe(-1) + " was holding up fine.\"\n\n");
-            result.screens[6].attach("The soldiers engage in idle speculation about your fate, and you don't even have the strength to speak up.  You don't have any idea about what's wrong with you, either.  Are you going to die?  It seems like you are.");
-
-            result.screens[7].attach("\"If some weird disease breaks out among the prisoners, then maybe I should file for a transfer to the front lines.  At least the combat pay would be nice.\"\n\n");
-            result.screens[7].attach("\"Why do you need combat pay?  You'll just spend it all on superchats.\"\n\n");
-            result.screens[7].attach("\"Hey, those superchats are money well spent.  " + fullName(8) + " is the light of my life.\"\n\n");
-            result.screens[7].attach("They make light banter with each other, seemingly unbothered by the act of carrying a soon-to-be corpse.  Even as they talk, it becomes more and more difficult to make out the words.  Your ears are beginning to fail just like your eyes.");
-
-            result.screens[8].attach("The only consolation is that it's not a painful death.  Every single one of your senses is fading away.  The world feels unreal.\n\n");
-            result.screens[8].attach("By the time the soldiers stop walking, you're already gone.");
-		} else if (p == PlotEvent.HASHIMOTOROMANCE1) {
-            result = new Scene(33);
-
-            result.backgrounds[0] = "dorm";
-            result.screens[0].attach("Coming back home without " + Tanaka() + " wasn't an easy decision.  Even if " + heShe(5) + "'s not in too much immediate danger, " + heShe(5) + "'s still effectively a prisoner of the Lunar Syndicate.  Without your help, it's hard to believe that " + heShe(5) + "'ll be able to escape from a group like that on " + hisHer(5) + " own.\n\n");
-            result.screens[0].attach("The Lunar Syndicate is an enormous, dangerous group of criminals whose leader seems almost omniscient.  That's half the reason you came back here.  It's clear that you don't yet have the skills or the resources necessary to go up against an enemy like that.  And the best way to get those skills and resources is to come back to a place where you have friends to help you out.\n\n");
-            result.screens[0].attach("But that's only half the reason.  The other half is that you care about the people here, too.  There's more to your life than just " + Tanaka() + ".");
-
-            result.characters[1] = new String[]{"hashimoto"};
-            result.emotions[1] = new String[]{"Uncomfy"};
-            result.screens[1].attach("Right now, you're filling " + Hashimoto() + " in on everything that happened.  There's a lot to talk about, so the two of you might not end up getting much sleep this morning.\n\n");
-            result.screens[1].attach("\"You went through all of that for " + Tanaka() + "'s sake?  Honestly, I'm surprised you came back...\"\n\n", 0);
-            result.screens[1].attach("Maybe it is surprising that you managed to come back.  If " + Tanaka() + " hadn't been there to trick the Syndicate soldiers into thinking you were on their side, then you might not have made it out alive.");
-
-            result.emotions[2] = new String[]{"Neutral"};
-            result.screens[2].attach("\"That's not what I meant.  I knew from the start that you'd find a way to rescue " + Tanaka() + ".  That's just the kind of person you are.  Even if they caught you, you would've pulled some sort of super spy shit to get out of there.\"\n\n", 0);
-            result.screens[2].attach(Hashimoto() + " might be giving you too much credit.  But setting that aside, what was " + heShe(0) + " trying to get at?\n\n");
-            result.screens[2].attach("\"I'm surprised that you even wanted to come back.  You're in love with " + Tanaka() + ", right?  Why else would you go that far for " + himHer(5) + "?\"\n\n", 0);
-            result.screens[2].attach(Tanaka() + " needed help, and it looked like you might have the ability to provide it.  You can want to help somebody without being in love with " + himHer(5) + ".");
-
-            result.emotions[3] = new String[]{"Surprise"};
-            result.screens[3].attach("\"Are you serious?  Don't fuck with me, here.  There's a difference between 'helping' someone, like helping them move their stuff out of their ex's house or whatever, and... and tracking them halfway across the world to pick a fight with an international crime syndicate for their sake.  You get that, right?  Those are two very different things!\"\n\n", 0);
-            result.screens[3].attach("It's true, though.  You might have had a crush on " + Tanaka() + " for awhile, but " + heShe(5) + "'s just a friend.\n\n");
-            result.screens[3].attach("\"If you're willing to go that far for a 'friend', then just how far would you go for somebody you actually-\"", 0);
-
-            result.emotions[4] = new String[]{"Uncomfy"};
-            result.screens[4].attach(Hashimoto() + " suddenly pauses, a dejected expression flashing across " + hisHer(0) + " face.\n\n");
-            result.screens[4].attach("\"Oh, wait.  I get it now.  There's somebody else, right?  If you've already got your heart set on another " + guyGirl(5) + ", then...\"\n\n", 0);
-            result.screens[4].attach("No, that isn't it, either.  With how busy you've been lately, romance has been the last thing on your mind.");
-
-            result.emotions[5] = new String[]{"Surprise"};
-            result.screens[5].attach("\"Wait, th-then... you're still single?\"\n\n", 0);
-            result.screens[5].attach("Of course you are.  With how you're travelling around the world and putting your life on the line, it's not like you have much choice.  It wouldn't be courteous to put your " + boyGirl(5) + "friend through something like that.  They'd never be able to know when you were going to come home, or if you were going to get yourself killed.\n\n");
-            result.screens[5].attach("\"Oh... I see.\"", 0);
-
-            result.emotions[6] = new String[]{"Neutral"};
-            result.screens[6].attach(Hashimoto() + " seems to be taken aback at first, but " + heShe(0) + " recovers quickly.  The surprise on " + hisHer(0) + " face is replaced by annoyance.\n\n");
-            result.screens[6].attach("\"Hold on.  That's bullshit.\"\n\n", 0);
-            result.screens[6].attach(HeShe(0) + " disapproves of you being single?\n\n");
-            result.screens[6].attach("\"It's not that.  I just don't like your reasons.  If you love someone, then being 'courteous' shouldn't matter.  Keeping your distance 'for their sake', that's what's bullshit.\"", 0);
-
-            result.emotions[7] = new String[]{"Angry"};
-            result.screens[7].attach("But if you do get involved with someone, and then you die, then you'll be putting that person through " + hisHer(5) + " " + boyGirl(-1) + "friend's death.  That would be painful.\n\n");
-            result.screens[7].attach("\"More painful than never being in love in the first place!?  Not a fucking chance!\"\n\n", 0);
-            result.screens[7].attach("It looks like this is turning into another debate.  Well, getting to enjoy this sort of thing again is part of why you wanted to come back home.  You had missed this.\n\n");
-            result.screens[7].attach("\"Don't change the subject!  I want you to promise me right now, that if you ever fall in love with somebody, you're not gonna hold back just 'cause you're worried about dying.  You need to be honest, and come right out and say-\"", 0);
-
-            result.emotions[8] = new String[]{"Uncomfy"};
-            result.screens[8].attach(Hashimoto() + " abruptly pauses mid-word.\n\n");
-            result.screens[8].attach("\"Shit.  It happened again.\"\n\n", 0);
-            result.screens[8].attach("What's this, now?  What exactly happened?\n\n");
-            result.screens[8].attach("\"It always goes like this.  The more I spend time with you, the more I look at my own life and see what I'm doing wrong.  It makes me feel like an idiot for not noticing it sooner.  ", 0);
-            if (getGoalLevel(10, false) < 4) {
-                result.screens[8].attach("It's what happened when I was just pointlessly fucking with people at the arcade.  ", 0);
-            } else {
-                result.screens[8].attach("It's what happened when I realized that there was no point in spending my nights spraying graffiti that would just get cleaned up in a few days.  ", 0);
-            }
-            result.screens[8].attach("And it's happening again now.\"", 0);
-
-            result.emotions[9] = new String[]{"Frown"};
-            result.modifiers[9] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[9].attach(HeShe(0) + " steps closer to you.\n\n");
-            result.screens[9].attach("\"Seriously, the more time we spend together, the more I... admire you.  You're everything that I want to be.\"\n\n", 0);
-            result.screens[9].attach("It's rare for " + Hashimoto() + " to directly praise you like this.\n\n");
-            result.screens[9].attach("\"Yeah, well, it's pretty fucking embarrassing.  But it's the truth.  You aren't just capable- I mean, the world is full of capable shitheads who are great at making things worse for everyone else.  It's the way that you use your abilities to help people.  You're... 'real'.  And I want to be 'real' like that too.\"\n\n", 0);
-
-            result.emotions[10] = new String[]{"Neutral"};
-            result.modifiers[10] = new Modifier[]{Modifier.CLOSEUP};
-            result.tracks[10] = Music.SILENCE;
-            result.screens[10].attach("What brought this on?  Wasn't " + Hashimoto() + " the one who said not to change the subject.\n\n");
-            result.screens[10].attach("\"This is still the same subject.\"\n\n", 0);
-            result.screens[10].attach("But weren't you talking about love?\n\n");
-            result.screens[10].attach("\"Yeah.  And what I'm saying is that I'm... I'm completely in love with you.\"", 0);
-
-            result.emotions[11] = new String[]{"Uncomfy"};
-            result.modifiers[11] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[11].attach("Oh.  So that's what this was about.\n\n");
-            result.screens[11].attach("\"I'm not expecting you to love me back.  ", 0);
-            if (currentPlaythrough.ownGender.presentation() == Gender.MALE && currentPlaythrough.personGenders[0].presentation() == Gender.FEMALE) {
-                result.screens[11].attach("You probably haven't even been thinking of me as a girl.  ", 0);
-            } else {
-                result.screens[11].attach("I'm just a meathead, and you're some sort of supergenius.  ", 0);
-            }
-            result.screens[11].attach("But... I don't wanna be a hypocrite, so... I have to come out and say it.\"\n\n", 0);
-            result.screens[11].attach(Hashimoto() + " managed to maintain eye contact for the love confession itself, but it seems like that was the limit of " + hisHer(0) + " nerve.  " + HeShe(0) + " trails off, " + hisHer(0) + " gaze wandering to the side.\n\n");
-            result.screens[11].attach("And so, " + heShe(0) + "'s surprised when you step closer to " + himHer(0) + " in turn.");
-
-            result.emotions[12] = new String[]{"Surprise"};
-            result.modifiers[12] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[12].attach(Hashimoto() + " is making a lot of assumptions.  ");
-            if (currentPlaythrough.ownGender.presentation() == Gender.MALE && currentPlaythrough.personGenders[0].presentation() == Gender.FEMALE) {
-                result.screens[12].attach("It's true that " + heShe(0) + " isn't exactly girly, but that's never been something you especially cared about.  And ");
-            } else {
-                result.screens[12].attach("Even if it's easy to make fun of " + himHer(0) + " sometimes, that doesn't mean you've been thinking of " + himHer(0) + " as an idiot.  After all, ");
-            }
-            if (getGoalLevel(27, false) > 0) {
-                result.screens[12].attach("it was " + Hashimoto() + " who showed you the importance of living life like you might die tomorrow.  ");
-            } else {
-                result.screens[12].attach(Hashimoto() + " " + himHer(0) + "self taught you some of the skills you used to track down " + Tanaka() + ".  ");
-            }
-            result.screens[12].attach("If you're worthy of admiration, then " + Hashimoto() + " deserves credit for helping you reach that point.\n\n");
-            result.screens[12].attach("\"Oh.\"\n\n", 0);
-            result.screens[12].attach("Not to mention that " + Hashimoto() + " is worthy of admiration in " + hisHer(0) + " own right.  In the time you've known " + himHer(0) + ", " + heShe(0) + "'s shown an unflinching willingness to change and improve " + himHer(0) + "self.  " + HeShe(0) + " never lets " + himHer(0) + "self get complacent.  " + HeShe(0) + "'s always thinking about how " + heShe(0) + " can do better.");
-
-            result.emotions[13] = new String[]{"Uncomfy"};
-            result.modifiers[13] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[13].attach("\"You aren't saying that just to be nice, are you?\"\n\n", 0);
-            result.screens[13].attach(Hashimoto() + " is normally so headstrong.  Why is " + heShe(0) + " having trouble accepting your praise now?\n\n");
-            result.screens[13].attach("\"It was easy to act tough back when you seemed like some dumbass who couldn't even throw a proper punch.  But now... it feels like you've gotten ahead of me.  I'm still stuck in my own head, trying to figure my own shit out, and you're out there making a difference to other people.\"\n\n", 0);
-            result.screens[13].attach("Why should that matter?\n\n");
-            result.screens[13].attach("\"Because your world is getting so much bigger than mine.  Is... Is spending time with me really what you want to be doing most right now?  Am I really enough to satisfy you?\"", 0);
-
-            result.emotions[14] = new String[]{"Frown"};
-            result.modifiers[14] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[14].attach("Now that " + Hashimoto() + " has told you about " + hisHer(0) + " feelings, you're seeing everything in a new light.  It must have been painful for " + himHer(0) + " to watch you go, thinking that those feelings were completely unrequited.  If " + heShe(0) + " had said this to you before you left, would you have been able to bring yourself to leave the country and chase after " + Tanaka() + "?\n\n");
-            result.screens[14].attach("It's true that you had only been thinking about " + Hashimoto() + " as a friend.  But now that the possibility of being more than that has come up... it sounds wonderful.  When you left for the Metropolis, you were worried that you might never see " + himHer(0) + " again.  From now on, the two of you should spend more time together.  Though, maybe there's no need to force it, since you could well end up spending your entire lives-\n\n");
-            result.screens[14].attach("\"Stop.  That's not what I was asking.\"\n\n", 0);
-            result.screens[14].attach("Despite " + hisHer(0) + " hesitation a moment ago, " + Hashimoto() + "'s voice is firm now.");
-
-            result.emotions[15] = new String[]{"Uncomfy"};
-            result.modifiers[15] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[15].attach("\"If we could settle down and live a regular life together, that... that would be great, obviously.  But I don't want you to give up what you're doing now.  If you were the kind of " + guyGirl(-1) + " who would drop everything just to spend more time with me, I never would've fallen in love with you in the first place.\"\n\n", 0);
-            result.screens[15].attach(Hashimoto() + " hesitates.  " + HeShe(0) + "'s having trouble meeting your gaze again.\n\n");
-            result.screens[15].attach("\"And... I mean, even if you did drop everything, you never know what could happen.  It's not like it would actually guarantee that we'd have a chance to be happy together.\"", 0);
-
-            result.emotions[16] = new String[]{"Closed"};
-            result.modifiers[16] = new Modifier[]{Modifier.CLOSEUP};
-            result.screens[16].attach("\"So... I'm just asking you about the here and now.  Is that enough for you?  I want to know that you won't have any regrets, even if one of us dies before we have a chance to live together as", 0);
-            if (currentPlaythrough.ownGender.presentation() != currentPlaythrough.personGenders[0].presentation()) {
-                result.screens[16].attach(" boyfriend and girlfriend.\"\n\n", 0);
-            } else {
-                result.screens[16].attach("... as lovers.\"\n\n", 0);
-            }
-            result.screens[16].attach("It seems backwards that " + Hashimoto() + " is the one insisting on making sure that you're okay with the idea of your " + boyGirl(0) + "friend dying at any time.  After all, you're the one who's actually risking your life on a regular basis.  But maybe that's just " + hisHer(0) + " way of showing that " + heShe(0) + " understands what " + heShe(0) + "'s getting into.\n\n");
-            result.screens[16].attach("Or maybe it's because you still haven't formally conceded that " + Hashimoto() + " was right about it being better to come out with your feelings than to keep them bottled up for somebody else's sake.  When you're having a debate with a friend, it's important to let " + himHer(0) + " know when " + heShe(0) + "'s gotten through to you.\n\n");
-            result.screens[16].attach("And " + Hashimoto() + " values actions over words, so there's really only one way to admit your defeat.  You bring your face closer to " + hisHers(0) + "...");
-
-            result.characters[17] = new String[0];
-            result.backgrounds[17] = "black";
-            result.screens[17].attach("For all " + hisHer(0) + " self-deprecating talk earlier, " + Hashimoto() + " doesn't seem surprised in the slightest to feel your lips on " + hisHer(0) + " own.  " + HeShe(0) + " returns your kiss eagerly.\n\n");
-            result.screens[17].attach("Considering how you first met, you never would've expected your relationship with " + Hashimoto() + " to end up like this.  But now that you're here, it feels surprisingly natural.  " + HisHer(0) + " tongue pushes against your lips, and you find yourself opening them so that you can explore each other's mouths.\n\n");
-            result.screens[17].attach(HisHer(0) + " arms tighten around you.  It's been awhile since you've scuffled, so you had almost forgotten just how fit " + Hashimoto() + " is.  But with only a small grunt of effort, " + heShe(0) + " lifts you off your feet and pushes you down onto your bed.");
-
-            result.sounds[18] = Effect.RUSTLE;
-            result.screens[18].attach("Things are suddenly moving very fast.  While you were kissing, apparently " + Hashimoto() + " was already starting to get undressed.\n\n");
-            result.screens[18].attach("And as " + heShe(0) + " climbs atop you, " + heShe(0) + " sheds the last of " + hisHer(0) + " clothes.  Normally, when " + Hashimoto() + " would come to take a nap at your place, " + heShe(0) + " would sleep with all " + hisHer(0) + " clothes on.  But now, as you look up at " + himHer(0) + ", you can see all of " + Hashimoto() + "'s body for the first time.");
-
-            result.backgrounds[19] = "hashimotoh1";
-            result.tracks[19] = Music.MOMENTS;
-            result.screens[19].attach("It seems like " + Hashimoto() + "'s done holding back.  Does " + heShe(0) + " really not want to start with some foreplay or something?\n\n");
-            result.screens[19].attach("\"I hate wasting time.  You know that.  So, let's just get to it.\"\n\n", 0);
-            if (currentPlaythrough.ownGender != Gender.FEMALE) {
-                result.screens[19].attach("You don't have any objections, but...");
-
-                result.backgrounds[20] = "hashimotoh2";
-                result.screens[20].attach(Hashimoto() + " presses " + hisHer(0) + " crotch down on yours, then frowns, shifting " + himHer(0) + "self left and right as if searching for something.\n\n");
-                result.screens[20].attach("\"Hold on.  Why aren't you hard?  Am I doing something wrong?\"\n\n", 0);
-                result.screens[20].attach("Well, the two of you have just been talking about death and stuff.  It's not exactly the most titillating subject.\n\n");
-                result.screens[20].attach("\"Shit.  That's my bad.\"\n\n", 0);
-                result.screens[20].attach("It should still work out eventually.  Maybe you can help make " + Hashimoto() + " feel good in the meantime?");
-
-                result.screens[21].attach("\"No.  I've got something I wanna try.  How does this feel?\"\n\n", 0);
-                result.screens[21].attach(Hashimoto() + " relaxes " + hisHer(0) + " legs, letting " + hisHer(0) + " weight press down on your crotch.  Then, " + heShe(0) + " starts to slide " + himHer(0) + "self forward and back.\n\n");
-                result.screens[21].attach("You can feel " + himHer(0) + " rubbing against you through your pants.  It feels good, but more than that, the sight of " + hisHer(0) + " slit moving against you is mesmerizing.");
-
-                result.screens[22].attach("Slowly but surely, you can feel your shaft starting to wake up.  But it's still a bit awkward to just lay here while " + Hashimoto() + " does all the work.  You aren't sure what you're supposed to be doing with your hands.\n\n");
-                result.screens[22].attach("\"Just relax and enjoy it.  You don't always have to be 'doing something'.\"\n\n", 0);
-                result.screens[22].attach("You never thought you'd hear " + Hashimoto() + " say something like that.\n\n");
-                result.screens[22].attach("\"You know what I'm trying to say.  Just let me do this, alright?  I'm trying to focus.\"\n\n", 0);
-                result.screens[22].attach("You do as " + Hashimoto() + " asks.  More and more, the sense of pressure between your legs is turning into surges of pleasure with every movement of " + Hashimoto() + "'s hips.  And then...");
-
-                result.backgrounds[23] = "hashimotoh3";
-                result.screens[23].attach("\"Looks like you're ready.\"\n\n", 0);
-                result.screens[23].attach("Once " + heShe(0) + " feels your hardness underneath " + himHer(0) + ", " + Hashimoto() + " unzips your pants to let your cock out.  You're definitely ready.  ");
-                if (currentPlaythrough.personGenders[0].presentation() == Gender.FEMALE) {
-                    result.screens[23].attach("But what about " + Hashimoto() + "?\n\n");
-                    result.screens[23].attach("\"I'm fine.  Let's just do it.\"\n\n", 0);
-                    result.screens[23].attach("Is " + heShe(0) + " really fine?  It looks like it's going to be a tight fit.");
-                } else {
-                    result.screens[23].attach("But before you start, shouldn't you put on some lube or something?\n\n");
-                    result.screens[23].attach("\"Didn't bring any.  I wasn't planning on doing this.  But I'll be fine.\"\n\n", 0);
-                    result.screens[23].attach("Will " + heShe(0) + " really be fine?  ");
-                }
-                result.screens[23].attach(" Maybe it would be better to slow down and-");
-
-                result.backgrounds[24] = "hashimotoh4";
-                result.screens[24].attach(Hashimoto() + " slams " + hisHer(0) + " hips downward, and the jolt of pleasure causes your mind to blank out.  You reflexively drive yourself upward to meet " + himHer(0) + ", and you end up buried balls-deep inside.\n\n");
-                result.screens[24].attach("\"Guh.  Ow.\"\n\n", 0);
-                if (currentPlaythrough.personGenders[0] != Gender.MALE) {
-                    result.screens[24].attach(HeShe(0) + "'s bleeding, and " + heShe(0) + "'s obviously in pain.  ");
-                } else {
-                    result.screens[24].attach("There's no way that this is feeling good for " + himHer(0) + ".  ");
-                }
-                result.screens[24].attach(HeShe(0) + " shouldn't be trying to act tough.  " + HeShe(0) + " should be giving you a chance to give some pleasure to " + himHer(0) + ", too.\n\n");
-                result.screens[24].attach("\"Shut up.  I'm not doing this to feel good.\"", 0);
-
-                result.screens[25].attach(HeShe(0) + " lifts " + hisHer(0) + " hips, and it feels like your cock is being sucked upward.  You're arching your back, your mind going blank again.  Inch by inch, your shaft slides out from the tight grip of " + Hashimoto() + "'s ");
-                if (currentPlaythrough.personGenders[0] == Gender.MALE) {
-                    result.screens[25].attach("ass.\n\n");
-                } else {
-                    result.screens[25].attach("lower lips.\n\n");
-                }
-                result.screens[25].attach("\"You're the one who needs to stop acting tough.  It feels good, right?\"\n\n", 0);
-                result.screens[25].attach(HeShe(0) + " pushes " + hisHer(0) + " hips down, swallowing your shaft all the way to the base.\n\n");
-                result.screens[25].attach("\"So stop fighting it.\"", 0);
-
-                result.screens[26].attach(HeShe(0) + "'s right.  Even if you weren't caught in the iron grip of " + Hashimoto() + "'s thighs, you might not have the willpower to pull out.  The tight wetness sliding up and down your cock feels too good.\n\n");
-                result.screens[26].attach("Whenever " + heShe(0) + " stops, you can briefly regain your sanity.  But then " + heShe(0) + " moves, and you're completely at " + hisHer(0) + " mercy.  " + HeShe(0) + " slides " + himHer(0) + " self down your shaft, and your body responds completely by reflex, driving it deep inside " + himHer(0) + ".  " + HeShe(0) + " slides back upward, and you feel like " + heShe(0) + "'s trying to suck you dry.\n\n");
-                result.screens[26].attach("\"If you want to make it easier on me, then just cum right away.  Let it all out inside me.\"\n\n", 0);
-                result.screens[26].attach(HeShe(0) + " punctuates " + hisHer(0) + " words with another movement of " + hisHer(0) + " hips.  At first, " + heShe(0) + " was going slowly enough that you had time to think in between each burst of pleasure.  But now " + heShe(0) + "'s starting to go faster.");
-
-                result.screens[27].attach("Your hips move in unison.  At this rate, you really are going to cum.  You can't even gather your thoughts enough to speak.\n\n");
-                result.screens[27].attach("\"Aah...\"\n\n", 0);
-                result.screens[27].attach("But it seems like " + Hashimoto() + " might be starting to enjoy this, too.  That breathy sigh is the first sign you've seen that " + heShe(0) + "'s feeling any pleasure from this.\n\n");
-                result.screens[27].attach(HisHer(0) + " movements are beginning to change.  At first, " + heShe(0) + " was very steady and deliberate, moving " + himHer(0) + "self all the way down your cock, then back up so that you'd almost slip out.  It felt great to have the entire length of your shaft stimulated like that, but it was still very clear that " + Hashimoto() + " was consciously thinking about every movement.");
-
-                result.screens[28].attach("Now, though, " + hisHer(0) + " movements are becoming passionate, instinctive.  " + HeShe(0) + " takes you deep inside, then grinds forward and back, so that you repeatedly strike " + hisHer(0) + " deepest places.  " + HeShe(0) + " might be getting overwhelmed by the pleasure, too.\n\n");
-                result.screens[28].attach("\"Go on... cum...!\"\n\n", 0);
-                result.screens[28].attach("You'd like to see even more of that.  You'd like to make " + himHer(0) + " feel this good too, to the point that " + heShe(0) + "'ll stop thinking of this as something " + heShe(0) + "'s just doing to make you feel good...");
-
-                result.backgrounds[29] = "hashimotoh5";
-                result.screens[29].attach("But you can't hold back any longer.  Your movements become spasmic, going out of synch with " + Hashimoto() + ", as you reach your orgasm.  White-hot pleasure flashes through your lower body, and the next thing you know, you've gone completely limp with " + Hashimoto() + " atop you.\n\n");
-                result.screens[29].attach("\"Haah... I did it.\"\n\n", 0);
-                result.screens[29].attach(HeShe(0) + " certainly looks satisfied.");
-
-                result.screens[30].attach("Was it good for " + Hashimoto() + " too?\n\n");
-                result.screens[30].attach("\"Yeah.  Honestly, I expected it to hurt more, but it wasn't bad at all.\"\n\n", 0);
-                result.screens[30].attach("It wasn't bad, but it seems like it wasn't exactly great, either.  " + Hashimoto() + " was so focused on your pleasure that " + heShe(0) + " didn't give you much of a chance to make " + himHer(0) + " feel good too.\n\n");
-                result.screens[30].attach("Maybe you'll be able to do better next time.");
-
-                result.backgrounds[31] = "black";
-                result.screens[31].attach(Hashimoto() + " lays " + himHer(0) + "self down on the bed next to you.  Seems like you won't need to take turns sleeping on the couch anymore.\n\n");
-                result.screens[31].attach("\"I hope you'll remember this when you're out there, doing the things you need to do.\"\n\n", 0);
-                result.screens[31].attach("You definitely will.  And you'll be looking forward to coming home to " + Hashimoto() + ".\n\n");
-                result.screens[31].attach("\"... Yeah.  So make sure you survive.  I'll do my best to survive, too.\"", 0);
-
-                result.screens[32].attach(Hashimoto() + " ended up doing most of the work, but you're still pretty tired out, both emotionally and physically.  Fortunately, you had known that you wouldn't be getting much sleep this morning, with all the catching up you were going to do with " + Hashimoto() + ".  You sleep well, and you wake up feeling pretty good.\n\n");
-                result.screens[32].attach("You may be " + Hashimoto() + "'s " + boyGirl(-1) + "friend now, but you don't really feel any different.  All your old reasons for wanting to save " + Tanaka() + " still stand.  But now, you have one more reason: " + Hashimoto() + " is expecting you to succeed.  You don't want to disappoint " + himHer(0) + ", do you?");
-            } else {
-                result.screens[19].attach("");
-            }
-        } else if (p == PlotEvent.YUMENOROMANCE1) {
-            result = new Scene(20);
-
-            result.backgrounds[0] = "cleaner";
-            result.tracks[0] = Music.SILENCE;
-            result.screens[0].attach("Coming back home without " + Tanaka() + " wasn't an easy decision.  Even if " + heShe(5) + "'s not in too much immediate danger, " + heShe(5) + "'s still effectively a prisoner of the Lunar Syndicate.  Without your help, it's hard to believe that " + heShe(5) + "'ll be able to escape from a group like that on " + hisHer(5) + " own.\n\n");
-            result.screens[0].attach("The Lunar Syndicate is an enormous, dangerous group of criminals whose leader seems almost omniscient.  That's half the reason you came back here.  It's clear that you don't yet have the skills or the resources necessary to go up against an enemy like that.  And the best way to get those skills and resources is to come back to a place where you have friends to help you out.\n\n");
-            result.screens[0].attach("But that's only half the reason.  The other half is that you care about the people here, too.  There's more to your life than just " + Tanaka() + ".");
-
-            result.screens[1].attach("Patching up your relationship with " + Yumeno() + " wasn't too hard.  " + HeShe(1) + " was angry at you for leaving the city to chase after " + Tanaka() + ", but apparently that was just because " + heShe(1) + " was worried for your sake.  Now that you're back, all's well that ends well.\n\n");
-            boolean found = false;
-            if (currentPlaythrough.weeklyActions[weekDayNumber()][0] == Action.HOMELANDING) {
-                result.screens[1].attach("You've already filled " + himHer(1) + " in on the details of your brief adventure in the Metropolis.  " + HeShe(1) + " was quiet as you explained the nature of the group that abducted " + Tanaka() + " and your plans for dealing with them.  By the time you were done, it had already gotten late.  You're heading off to bed to get some sleep, and then maybe you'll have time to play some video games with " + Yumeno() + " early tomorrow morning, for old time's sake.");
-            } else {
-                result.screens[1].attach("Everything has been normal between the two of you since then.  You and " + Yumeno() + " have just enjoyed a pleasant evening together.");
-            }
-
-            result.backgrounds[2] = "black";
-            result.screens[2].attach("However, not long after you climb into your bed in " + Yumeno() + "'s guest room, you hear footsteps outside your door.  You were already starting to drift off to sleep, so you don't immediately make the connection that it must be " + Yumeno() + ".\n\n");
-            result.screens[2].attach("There's a quiet clicking sound.  Is that the door opening?  Maybe " + Yumeno() + " forgot something in this room, and " + heShe(1) + "'s trying to take it out of here without waking you.  That sounds plausible.  So, you should probably just pretend you don't notice " + himHer(1) + ".\n\n");
-            result.screens[2].attach("Then, the room returns to silence.  Did " + Yumeno() + " leave without you being able to hear " + himHer(1) + "?  Or maybe the noise you heard was " + himHer(1) + " leaving, and you just didn't notice the sound of " + himHer(1) + " coming into the room.  Either way, it seems like you should go back to trying to get to sleep.  Your groggy mind starts to slow down again.\n\n");
-            result.screens[2].attach("It's only when you feel the mattress sink under somebody else's weight that you fully wake up.");
-
-            result.backgrounds[3] = "yumenoh1";
-            result.tracks[3] = Music.MOMENTS;
-            result.screens[3].attach("It's " + Yumeno() + ".  " + HeShe(1) + "'s in your bed.  Why is " + heShe(1) + " in your bed?\n\n");
-            result.screens[3].attach("\"To seduce you, obviously.\"\n\n", 1);
-            result.screens[3].attach(HeShe(1) + "'s smiling, but " + hisHer(1) + " tone is dead serious.  This isn't a joke.");
-
-            result.screens[4].attach("Just a moment ago, you were starting to fall asleep.  This is way too sudden.  Your brain can't keep up.  Shouldn't " + Yumeno() + " slow down a little?\n\n");
-            result.screens[4].attach("\"Why should I slow down?  It seems like your body is all ready to go.\"\n\n", 1);
-            result.screens[4].attach(Yumeno() + " presses " + hisHer(1) + " hand down against your crotch.  ");
-            if (currentPlaythrough.ownGender != Gender.FEMALE) {
-                result.screens[4].attach("The unfamiliar sensation of being touched down there by somebody else is quickly causing you to get hard.  You feel the urge to push your hips against " + hisHer(1) + " hand.\n\n");
-                result.screens[4].attach("But isn't this backwards?  You and " + Yumeno() + " don't have this kind of relationship, at least not yet.  " + Yumeno() + " hasn't ever said " + heShe(1) + " was interested in you.  Well, you might have had your suspicions, but for " + himHer(1) + " to just jump straight into your bed like this...\n\n");
-                result.screens[4].attach("\"Yeah, I'm completely in love with you.  And I could tell that you were starting to want me, too.\"", 1);
-
-                result.backgrounds[5] = "yumenoh2";
-                result.screens[5].attach("\"But you wouldn't make the first move.  I really, really wanted you to make the first move.\"\n\n", 1);
-                result.screens[5].attach("If you hadn't been so busy lately, then maybe you actually would have made the first move.  But romance has been the last thing on your mind.\n\n");
-                result.screens[5].attach("\"Right.  You've been thinking about " + Tanaka() + ".  How to find " + Tanaka() + ".  How to rescue " + Tanaka() + ".  " + Tanaka() + " this, " + Tanaka() + " that.\"\n\n", 1);
-                result.screens[5].attach("A note of irritation enters " + Yumeno() + "'s voice, and the pressure from " + hisHer(1) + " hand increases, almost to the point of becoming painful.");
-
-                result.backgrounds[6] = "yumenoh1";
-                result.screens[6].attach("\"I'm going to make you forget all about " + Tanaka() + ".\"\n\n", 1);
-                result.screens[6].attach("It seems like " + Yumeno() + " might be assuming too much.  You aren't actually in a relationship with " + Tanaka() + ".  You're just helping " + himHer(5) + " because " + heShe(1) + "'s a friend.\n\n");
-                result.screens[6].attach("\"Really?  Well, that's fine too, I suppose.\"", 1);
-
-                result.screens[7].attach("When " + Yumeno() + " didn't seem to hold a grudge against you for leaving " + himHer(1) + " behind to go to the Metropolis, the natural assumption was that it wasn't actually a big deal to " + himHer(1) + ".  But even if " + heShe(1) + " doesn't hate you for it, " + heShe(1) + " isn't willing to let it go, either.  You might have actually broken " + hisHer(1) + " heart.\n\n");
-                result.screens[7].attach("There's no need for " + himHer(1) + " to go this far.  If " + heShe(1) + " doesn't want to do this, then-\n\n");
-                result.screens[7].attach("\"But I do want to do this.  I should have done it from the very start.  They say that the quickest way to ", 1);
-                if (currentPlaythrough.ownGender == Gender.MALE) {
-                    result.screens[7].attach("a man's ", 1);
-                } else {
-                    result.screens[7].attach("someone's ", 1);
-                }
-                result.screens[7].attach("heart is through " + hisHer(-1) + " stomach, but the truth is that you need to aim a little bit lower.\"", 1);
-
-                result.backgrounds[8] = "yumenoh3";
-                result.screens[8].attach("When " + Yumeno() + " releases your cock from your pants, it's already fully erect.  " + Yumeno() + "'s hair was spilling over onto your lap, and when your shaft rises up through it, the silky texture feels pleasant against the sensitive skin.\n\n");
-                result.screens[8].attach("You're about to try to say something, but your mind goes blank when " + Yumeno() + " closes " + hisHer(1) + " fingers around your cock.  " + HeShe(1) + " immediately starts to move " + hisHer(1) + " hand up and down, using " + hisHer(1) + " own hair to stimulate you.  It feels amazing.  Has " + Yumeno() + " done this before?\n\n");
-                result.screens[8].attach("\"Nope.  But as soon as you said you were flying back here, I sat down and spent fifteen straight hours watching amateur porn.  I wanted to make sure I'd be able to make you feel good.\"\n\n", 1);
-                result.screens[8].attach(Yumeno() + " was planning on ambushing you in bed like this from the very start?\n\n");
-                result.screens[8].attach("\"That's right.  Ever since you left, I've been spending every moment thinking about how I could have done things better.\"", 1);
-
-                result.screens[9].attach("\"And now it's paying off, right?  Doesn't it feel good?\"\n\n", 1);
-                result.screens[9].attach("You have to admit that it does.  You wouldn't normally think that watching porn would make somebody good at the real thing, but " + Yumeno() + " must have gone out of " + hisHer(1) + " way to look for uncut videos where the guy actually gets brought naturally to orgasm.\n\n");
-                result.screens[9].attach("The mental image of " + Yumeno() + " going on a porn binge is pretty amusing.  But knowing " + Yumeno() + ", " + heShe(1) + " wasn't watching them for " + hisHer(1) + " own gratification at all.  As always, " + hisHer(1) + " focus is intense.\n\n");
-                result.screens[9].attach("And even as " + heShe(1) + " strokes your cock, " + hisHer(1) + " technique is only improving.  " + HeShe(1) + " seems to be judging your reactions and adjusting " + hisHer(1) + " movements accordingly.  Your cock is rising from its half-erection all the way to full mast.");
-
-                result.screens[10].attach("\"It feels better than when you play with yourself, right?\"\n\n", 1);
-                result.screens[10].attach("Judging from " + hisHer(1) + " expression, " + heShe(1) + " already knows the answer.\n\n");
-                result.screens[10].attach("\"It's funny.  You've been attached to this thing for your whole life, but I'm still better at using it than you are.\"\n\n", 1);
-                result.screens[10].attach("As always, " + Yumeno() + " picks up new skills quickly.\n\n");
-                result.screens[10].attach("\"It helps when the controls are so responsive.  I've never been the biggest fan of joystick games, but this one is pretty fun.\"", 1);
-
-                result.screens[11].attach(HeShe(1) + " really is enjoying this.  Now that you're fully erect and almost ready to burst, " + heShe(1) + "'s deliberately slowing down " + hisHer(1) + " movements, holding you on the edge.  " + HeShe(1) + "'ll start pumping " + hisHer(1) + " hand up and down faster for just a few strokes, then slow down again just when you feel like you're about to burst.\n\n");
-                result.screens[11].attach("\"I'm gonna make it feel so good that you can't go back to just using your own hand.  I'll make it so you can't live without me.\"\n\n", 1);
-                result.screens[11].attach("Even when " + Yumeno() + " is at " + hisHer(1) + " most competitive, it's rare for " + himHer(1) + " to gloat like this.  Maybe you can't complain, since you're the one getting pleasured right now.");
-
-                result.backgrounds[12] = "yumenoh4";
-                result.screens[12].attach("But at the same time, you probably shouldn't let " + himHer(1) + " get too full of " + himHer(1) + "self.  " + HeShe(1) + "'s still a beginner, after all.\n\n");
-                result.screens[12].attach("\"Huh?\"\n\n", 1);
-                result.screens[12].attach("It's true, isn't it?  After all, " + heShe(1) + " still hasn't made you cum even once.");
-
-                result.backgrounds[13] = "yumenoh5";
-                result.screens[13].attach("Without warning, " + Yumeno() + " takes your tip into " + hisHer(1) + " mouth and starts to stroke at top speed.  Your hips involuntarily jerk upward, but " + heShe(1) + " holds you down with " + hisHer(1) + " elbows, furiously milking your cock while " + hisHer(1) + " tongue swirls around the opening.\n\n");
-                result.screens[13].attach("You couldn't hold back even if you wanted to.  During all that time spent slowly stroking your cock, the anticipation was gradually building up.  And now, all of that desire is coming back at once.  " + Yumeno() + "'s hand is a blur, the individual strokes merging into a continuous stream of pleasure.");
-
-                result.screens[14].attach("You feel it starting to come out, drawn toward the repetitive movements of " + Yumeno() + "'s tongue.  " + HeShe(1) + " seems to sense it too, and the rhythm of " + hisHer(1) + " stroking changes, as if pulling the semen out of you.  Your mind goes blank as your hips jerk upward one last time.\n\n");
-                result.screens[14].attach(Yumeno() + " is just a moment too slow in pulling " + hisHer(1) + " face back away from your cock.");
-
-                result.backgrounds[15] = "yumenoh6";
-                result.screens[15].attach("It takes a moment for you to regain your senses.  It looks like most of your load ended up on the bed and yourself, but " + Yumeno() + " didn't escape entirely unscathed.\n\n");
-                result.screens[15].attach("\"Wow!  This stuff tastes really bad!\"\n\n", 1);
-                result.screens[15].attach("Apparently it doesn't bother " + himHer(1) + " that much, though.  " + HisHer(1) + " tone is full of the pure joy of discovering something new.");
-
-                result.screens[16].attach(Yumeno() + " smiles down at you.  " + HeShe(1) + " looks very satisfied.\n\n");
-                result.screens[16].attach("\"I'm gonna keep getting better and better at this.  I hope you're ready.\"\n\n", 1);
-                result.screens[16].attach("It seems like " + heShe(1) + "'s taken it as a challenge.  If it means feeling even more pleasure than this, though, that might not be a bad thing.\n\n");
-                result.screens[16].attach("But in the meantime, maybe it's your turn to see how well you can pleasure " + Yumeno() + " in turn.");
-
-                result.sounds[17] = Effect.RUSTLE;
-                result.characters[17] = new String[]{"yumeno"};
-                result.emotions[17] = new String[]{"Scared"};
-                result.backgrounds[17] = "cleaner";
-                result.screens[17].attach("\"Oh, n-no, that's alright!  I-I'm completely fine!\"\n\n", 1);
-                result.screens[17].attach(Yumeno() + " hurriedly gets up and backs away from the bed.  It's surprising.  " + HeShe(1) + " was so bold a moment earlier, but now " + heShe(1) + "'s flipped right back to being shy.  What's wrong?\n\n");
-                result.screens[17].attach("\"W-Well, it's getting late, so...  Maybe another time.\"", 1);
-
-                result.emotions[18] = new String[]{"Happy"};
-                result.screens[18].attach("\"I had a really good time, though.  And tomorrow morning...  Hehe, I have some more things I want to try, so look forward to it!  Good night!\"\n\n", 1);
-                result.screens[18].attach(Yumeno() + " vanishes out the door, leaving you to try to figure out what just happened.  Apparently " + heShe(1) + " isn't a fan of cuddling in the afterglow, either.");
-
-                result.characters[19] = new String[0];
-                result.screens[19].attach("Apparently " + Yumeno() + " is your girlfriend now.  On further reflection, that's actually kind of a nice thought.  " + HeShe(1) + " has a strange way of showing " + hisHer(1) + " affection, but you can deal with that.\n\n");
-                result.screens[19].attach("In the future, though, it might be better not to talk about " + Tanaka() + " too much in front of " + himHer(1) + ".  And as for what will happen once it's time for you to go to the Metropolis...  Well, you can cross that bridge when you get there.\n\n");
-                result.screens[19].attach("For now, you feel just about ready to go to sleep.  All the other issues can wait for tomorrow.");
-            }
-        }
-		if (result != null) {
-			result.associatedEvent = p;
-			String storedBackground = null;
-			String[] storedCharacters = new String[0];
-			String[] storedOutfits = new String[0];
-			String[] storedEmotions = new String[0];
-
-			for (int i = 0; i < result.screens.length; i++) {
-				if (result.backgrounds[i] == null || result.backgrounds[i].isEmpty()) {
-					result.backgrounds[i] = storedBackground;
-				} else {
-					storedBackground = result.backgrounds[i];
-				}
-				if ((result.characters[i] == null || result.characters[i].length == 0) && result.emotions[i] != null && result.emotions[i].length == storedEmotions.length) {
-					result.characters[i] = storedCharacters;
-					if (result.emotions[i].length == 0) {
-						result.emotions[i] = storedEmotions;
-					}
-				} else {
-					storedCharacters = result.characters[i];
-					storedEmotions = result.emotions[i];
-				}
-				if (result.outfits[i] == null || result.outfits[i].length == 0) {
-					result.outfits[i] = storedOutfits;
-				} else {
-					storedOutfits = result.outfits[i];
-				}
-			}
-		}
-		return result;
+        // TODO: make this a field on this class instead of instantiating locally once things are cleaned up more.
+        var sceneManager = new SceneManager();
+        return sceneManager.getPlotScene(p);
 	}
 	
 	public static Scene getCompletionScene(Goal g) {

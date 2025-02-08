@@ -1,10 +1,11 @@
+package Game;
+
 import javax.swing.JPanel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.io.*;
-import java.math.BigInteger;
 
 public class OptionElementMenu extends JPanel implements ListSelectionListener {
 	

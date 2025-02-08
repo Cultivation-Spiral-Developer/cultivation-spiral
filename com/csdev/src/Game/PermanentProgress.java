@@ -1,7 +1,11 @@
+package Game;
+
 import java.io.Serializable;
 
 import java.util.*;
 import java.math.BigInteger;
+
+import Scenes.*;
 
 public class PermanentProgress implements Serializable {
 	
@@ -9,8 +13,8 @@ public class PermanentProgress implements Serializable {
 	
 	String[] newEntries = new String[0];
 	HashMap<Game.Action, String[]> seenVariants = new HashMap<Game.Action, String[]>();
-	HashMap<List<Integer>, Game.Scene[]> watchedScenes = new HashMap<List<Integer>, Game.Scene[]>();
-	EnumMap<Game.PlotEvent, Game.Scene[]> watchedPlotEvents = new EnumMap<>(Game.PlotEvent.class);
+	HashMap<List<Integer>, Scene[]> watchedScenes = new HashMap<List<Integer>, Scene[]>();
+	EnumMap<Game.PlotEvent, Scene[]> watchedPlotEvents = new EnumMap<>(Game.PlotEvent.class);
 	EnumMap<Game.Achievement, BigInteger> highestAchievements = new EnumMap<>(Game.Achievement.class);
 	
 	int totalDays;
@@ -20,7 +24,7 @@ public class PermanentProgress implements Serializable {
 	
 	Playthrough[] archivedLoops = new Playthrough[0];
 
-	public String[] getWatchedSceneText(Game.Scene s, int sceneProgress) {
+	public String[] getWatchedSceneText(Scene s, int sceneProgress) {
 		String[] result = new String[0];
 		if (s == null) {
 			return result;

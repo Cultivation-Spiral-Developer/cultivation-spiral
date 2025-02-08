@@ -1,12 +1,15 @@
+package Game;
+
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
+
 public class AchievementCategoryMenu implements ListSelectionListener {
 	
-static final long serialVersionUID = 4L;
-JList<String> storedList = null;
+	static final long serialVersionUID = 4L;
+	JList<String> storedList = null;
 	
 	public void valueChanged(ListSelectionEvent e) {
         JList<Game.AchievementCategory> list = (JList<Game.AchievementCategory>)e.getSource();

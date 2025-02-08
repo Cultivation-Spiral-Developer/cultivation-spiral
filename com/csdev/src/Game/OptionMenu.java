@@ -1,13 +1,10 @@
+package Game;
+
 import javax.swing.JPanel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class OptionMenu extends JPanel implements ListSelectionListener {
 	

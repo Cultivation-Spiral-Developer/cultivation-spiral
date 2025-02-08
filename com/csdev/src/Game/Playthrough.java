@@ -1,3 +1,5 @@
+package Game;
+
 import java.awt.Color;
 
 import java.io.Serializable;
@@ -10,9 +12,6 @@ import java.io.File;
 
 import java.math.BigInteger;
 import java.net.URLDecoder;
-import java.util.HashMap;
-
-import javax.swing.JOptionPane;
 
 public class Playthrough implements Serializable {
 	
@@ -25,7 +24,7 @@ public class Playthrough implements Serializable {
 	boolean loopOver;
 	BigInteger startMOL = BigInteger.ZERO;
 	
-	Game.Action[][] weeklyActions = new Game.Action[Game.WeekDay.values().length][Game.TimeSlot.values().length];
+	public Game.Action[][] weeklyActions = new Game.Action[Game.WeekDay.values().length][Game.TimeSlot.values().length];
 	Game.RoutineElements[][] weeklyRoutine = new Game.RoutineElements[Game.WeekDay.values().length][Game.RoutineSettings.values().length];
 	
 	Game.Action[][][] archivedActions = new Game.Action[0][0][0];
@@ -57,10 +56,10 @@ public class Playthrough implements Serializable {
 	float bgmVolume = -32f;
 	float sfxVolume = -16f;
 	String[] personNames = new String[21];
-	Game.Gender[] personGenders = new Game.Gender[21];
-	Game.Locale[] personStatus = new Game.Locale[21];
+	public Game.Gender[] personGenders = new Game.Gender[21];
+	public Game.Locale[] personStatus = new Game.Locale[21];
 	int[] romance = new int[21];
-	Game.Gender ownGender = Game.Gender.MALE;
+	public Game.Gender ownGender = Game.Gender.MALE;
 	Game.Gender unmetGender = Game.Gender.FEMALE;
 	
 	Game.WindowContents NewDayContents = new Game.WindowContents();

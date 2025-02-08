@@ -1,3 +1,5 @@
+package Game;
+
 import javax.swing.JPanel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
