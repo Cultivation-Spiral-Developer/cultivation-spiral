@@ -1,5 +1,3 @@
-package Game;
-
 import java.math.BigInteger;
 
 public class Goal {
@@ -18,6 +16,8 @@ public class Goal {
 	int barEnd = 1000;
 	String storedString;
 	String previousString;
+
+	BigInteger opposition = BigInteger.ZERO;
 	
 	public Goal getNextGoal() {
 		if (nextGoal == null) {
@@ -363,6 +363,19 @@ public class Goal {
 				endPoint = true;
 			}
 		} else if (g.index == 28) {
+			if (g.tier == 0) {
+				name = "Grasp the situation";
+				toolTip = "Unlock a new Action";
+				completionText = "New Action unlocked: " + Game.Action.TROUBLEEARLY.name + " on the " + Game.Spot.STREETS.name;
+				requirement = Game.thousand(1);
+				opposition = Game.one(500);
+				endPoint = false;
+			} else {
+				name = "";
+				requirement = BigInteger.ZERO;
+				endPoint = true;
+			}
+		} else if (g.index == 29) {
 			name = "";
 			requirement = BigInteger.ZERO;
 			endPoint = true;
