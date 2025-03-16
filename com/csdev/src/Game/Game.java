@@ -80,7 +80,8 @@ import javax.sound.sampled.FloatControl;
 
 public class Game {
 
-    public static final String version = "1e";
+    public static final String version = "1f";
+    public static final boolean development = false;
 	public static final JFrame frame = new JFrame("Cultivation Spiral");
 	public static final JPanel mainPanel = new JPanel();
 	public static final JPanel headerDisplay = new JPanel();
@@ -223,7 +224,7 @@ public class Game {
 	public static BigInteger[] earlyLevelSums = new BigInteger[50];
 	public static final BigInteger levelConstant =   new BigInteger("1258925412");
 	public static final BigInteger levelSum = new BigInteger("4862116094");
-	public static int totalGoals = 30;
+	public static int totalGoals = 36;
 	
 	public static MiddleDisplay currentMiddleDisplay = MiddleDisplay.NEWDAY;
 	public static MiddleDisplay lastMiddleDisplay = MiddleDisplay.NEWDAY;
@@ -272,6 +273,7 @@ public class Game {
 	static BigInteger[] simulatedRelationships = new BigInteger[21];
 	static BigInteger[] simulatedAttributes = new BigInteger[21];
 	static BigInteger[] simulatedGoals = new BigInteger[Game.totalGoals];
+    static BigInteger[] extraProgress = new BigInteger[Game.totalGoals];
     static boolean startingRomance = false;
 	
 	public static String[] monthNames = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
@@ -694,7 +696,7 @@ public class Game {
 				RoutineElements.MOSTLYCOFFEE, RoutineElements.FINEDINING, RoutineElements.RESTAURANT, RoutineElements.CANCERJUICE}),
 		EQUIPMENT("Equipment", 1, new RoutineElements[]{RoutineElements.CHEAPCLOTHES, RoutineElements.EYECATCHING, 
 				RoutineElements.HANDHELDGAMES, RoutineElements.LARCENY, RoutineElements.BODYARMOR, 
-				RoutineElements.OSTENTATIOUS}),
+				RoutineElements.OSTENTATIOUS, RoutineElements.UNIFORM}),
 		STANCE("Stance", 2, new RoutineElements[]{RoutineElements.UNASSUMING, RoutineElements.TOUGH, 
 				RoutineElements.VULNERABLE, RoutineElements.GENEROUS, RoutineElements.FOCUSED, 
 				RoutineElements.SELFDESTRUCTIVE, RoutineElements.TRIUMPHANT, RoutineElements.LONER, RoutineElements.ADAPTIVE}),
@@ -738,6 +740,8 @@ public class Game {
 		LARCENY("larceny kit", BigInteger.valueOf(1500), 10, 3, Effect.SHATTER),
 		BODYARMOR("body armor", BigInteger.valueOf(2000), 15, 1, Effect.HAUL),
 		OSTENTATIOUS("ostentatious clothes", BigInteger.valueOf(2000), 11, 4, null),
+        UNIFORM("Syndicate uniform", BigInteger.valueOf(3000), 28, 3, null),
+        TECH("analytic instruments", BigInteger.valueOf(0), 35, 1, null),
 		
 		UNASSUMING("unassuming", BigInteger.valueOf(0), -1, -1, Effect.CLICK),
 		TOUGH("tough", BigInteger.valueOf(300), 3, 2, Effect.PUNCH),
@@ -791,7 +795,7 @@ public class Game {
 	}
 	
 	public enum AchievementCategory {
-		FULFILLMENT("Fulfillment", 0, new Achievement[]{Achievement.DAYDREAM, Achievement.DEVELOPMENT}),
+		FULFILLMENT("Fulfillment", 0, new Achievement[]{Achievement.DAYDREAM, Achievement.DEVELOPMENT, Achievement.EMPIRE}),
 		PROGRESSION("Progression", 1, new Achievement[]{Achievement.BELOVED, Achievement.POLYMATH}),
 		WEALTH("Wealth", 2, new Achievement[]{Achievement.INDEPENDENCE, Achievement.UPPERMIDDLE, Achievement.MILLIONAIRE}),
 		FEATS("Feats", 3, new Achievement[]{Achievement.BLUEBLOOD, Achievement.BATTLETESTED, Achievement.ASSISTANT, Achievement.CHARMING, Achievement.INVESTIGATOR, Achievement.SAVIOR, Achievement.TRUTHSEEKER}),
@@ -818,6 +822,7 @@ public class Game {
 	public enum Achievement {
 		DAYDREAM("Dreamer"),
 		DEVELOPMENT("Developer"),
+        EMPIRE("Ruler"),
 		
 		BELOVED("Beloved"),
 		POLYMATH("Polymath"),
@@ -991,7 +996,7 @@ public class Game {
 				Spot.HASHIMOTOSHOUSE, Spot.SLUMS, Spot.TOWER, Spot.COUNTRYCLUB, Spot.JACKALSHACK, Spot.AIRPORT, 
 				Spot.COLLEGETOWNFLIGHT}),
 		METROPOLIS("The Metropolis", new Spot[]{Spot.METAPARTMENT, Spot.METAIRPORT, Spot.SYNDICATE, Spot.HOTEL, Spot.MARKET,
-				Spot.STREETS, Spot.RAVECLUB, Spot.MEGACORP, Spot.METFLIGHT}),
+				Spot.STREETS, Spot.RAVECLUB, Spot.MEGACORP, Spot.BODYSHOP, Spot.METFLIGHT}),
 		WILDERNESS("The Mountains", new Spot[]{}),
 		CITYOFSIN("The City of Sin", new Spot[]{}), 
 		ATLANTIS("Atlantis", new Spot[]{}),
@@ -1051,14 +1056,15 @@ public class Game {
 		METAPARTMENT("Your Apartment", new Action[]{Action.METSLEEPMORNING, Action.METSLEEPNOON, Action.METSLEEPAFTERNOON, 
 				Action.METSLEEPEVENING, Action.METSLEEPMIDNIGHT, Action.METSLEEPPREDAWN, Action.METDREAMMORNING, 
 				Action.METDREAMNOON, Action.METDREAMAFTERNOON, Action.METDREAMEVENING}),
-		SYNDICATE("Lunar Syndicate", new Action[]{Action.RENDEZVOUS, Action.COORDINATE}),
+		SYNDICATE("Lunar Syndicate", new Action[]{Action.RENDEZVOUS}),
 		HOTEL("Upscale Hotel", new Action[]{Action.HOTELMORNING, Action.HOTELNOON, Action.HOTELCHECKEVENING, 
 				Action.HOTELMIDNIGHT, Action.HOTELCHECKMIDNIGHT, Action.HOTELPREDAWN, Action.HOTELCHECKPREDAWN}),
-		MARKET("The Marketplace", new Action[]{Action.LABOREARLY, Action.LABORLATE}),
-		STREETS("City Streets", new Action[]{Action.JOGEARLY, Action.JOGLATE, Action.TROUBLEEARLY, Action.TROUBLELATE}),
-		RAVECLUB("Rave Club", new Action[]{Action.CLUBEARLY, Action.CLUB, Action.CLUBLATE}),
+		MARKET("The Marketplace", new Action[]{Action.LABOREARLY, Action.LABORLATE, Action.TROUBLEEARLY, Action.TROUBLELATE, Action.COORDINATE, Action.SPLURGE, Action.METEMPIRE}),
+		STREETS("City Streets", new Action[]{Action.JOGEARLY, Action.JOGLATE}),
+		RAVECLUB("Rave Club", new Action[]{Action.CLUBEARLY, Action.CLUB, Action.CLUBLATE, Action.BINGE}),
 		MEGACORP("Megacorp HQ", new Action[]{Action.OFFICEMORNING, Action.OFFICENOON, Action.OFFICEAFTERNOON, 
 				Action.OFFICEEVENING, Action.PARTYEARLY, Action.PARTYLATE}),
+        BODYSHOP("Body Shop", new Action[]{Action.MINGLE}),
 		METFLIGHT("Flight plan", new Action[]{Action.HOMEFLIGHTONE, Action.HOMEFLIGHTTWO, Action.HOMEFLIGHTTHREE, 
 				Action.HOMEFLIGHTFOUR}),
 		
@@ -1871,24 +1877,60 @@ public class Game {
 				WEEKENDACTION.availableDays,
 				20, 3),
 
-        TROUBLEEARLY("Cause trouble", BigInteger.valueOf(2000),
-                new Goal("Discredit the local commander", 29, HUNDRED.multiply(BigInteger.valueOf(30000)),
-                    "New Action unlocked: " + FLYTOMETROPOLIS.name,
-                    "Unlock a new Action involving Tanaka"),
-                -1, 2, EVENING,
-                EVERYDAYACTION.availableDays,
-                28, 1),
-        TROUBLELATE("Smash and grab", BigInteger.valueOf(2000),
-                TROUBLEEARLY.ownGoal,
-                -1, 2, MIDNIGHT,
-                EVERYDAYACTION.availableDays,
-                28, 1),
-
-        COORDINATE("Coordinate with Tanaka", BigInteger.valueOf(2500),
+        COORDINATE("Coordinate w/ Tanaka", BigInteger.valueOf(2500),
                 RENDEZVOUS.ownGoal,
                 5, 5, EVENING,
                 EVERYDAYACTION.availableDays,
                 29, 1),
+
+        TROUBLEEARLY("Cause trouble", BigInteger.valueOf(2000),
+                /*new Goal("Discredit the local commander", 29, HUNDRED.multiply(BigInteger.valueOf(3000)),
+                    "New Action unlocked: " + COORDINATE.name,
+                    "Unlock a new Action involving Tanaka")*/null,
+                -1, 2, EVENING,
+                EVERYDAYACTION.availableDays,
+                28, 2),
+        TROUBLELATE("Smash and grab", BigInteger.valueOf(2000),
+                TROUBLEEARLY.ownGoal,
+                -1, 2, MIDNIGHT,
+                EVERYDAYACTION.availableDays,
+                28, 2),
+
+        METEMPIRE("Buy protection", BigInteger.valueOf(1000),
+                new Goal("Build your empire", 33, HUNDRED.multiply(BigInteger.valueOf(4000)),
+                        "+50 Meaning of Life",
+                        "Gain some Meaning of Life"),
+                -1, 6, NOON,
+                EVERYDAYACTION.availableDays,
+                32, 1),
+        HOMEEMPIRE("Recruit followers", BigInteger.valueOf(1000),
+                new Goal("Build your empire", 34, HUNDRED.multiply(BigInteger.valueOf(4000)),
+                        "+50 Meaning of Life",
+                        "Gain some Meaning of Life"),
+                -1, 6, EVENING,
+                EVERYDAYACTION.availableDays,
+                32, 1),
+
+        MINGLE("Mingle", BigInteger.valueOf(2000),
+                new Goal("Figure out how this works", 32, HUNDRED.multiply(BigInteger.valueOf(1000)),
+                        "Empire-building Actions unlocked in all cities!",
+                        "Unlock a new Meaning-of-Life-related Action"),
+                6, 6, PREDAWN,
+                EVERYDAYACTION.availableDays,
+                31, 1),
+
+        SPLURGE("Splurge", BigInteger.valueOf(3500),
+                new Goal("Attract attention", 31, HUNDRED.multiply(BigInteger.valueOf(20*1000)),
+                        "New Action unlocked: " + MINGLE.name + " at the Body Shop",
+                        "Unlock a new Relationship, Attribute, and Action"),
+                -1, 5, MIDNIGHT,
+                EVERYDAYACTION.availableDays,
+                28, 4),
+        BINGE("Binge", BigInteger.valueOf(3500),
+                SPLURGE.ownGoal,
+                -1, 5, PREDAWN,
+                EVERYDAYACTION.availableDays,
+                28, 4),
 
         HANDHELDACTION("Handheld games - unselectable", THOUSAND.multiply(BigInteger.valueOf(10)),
 				null, 
@@ -1917,9 +1959,16 @@ public class Game {
 				-1, 3, PREDAWN, 
 				EVERYDAYACTION.availableDays, 
 				-1, -1),
+        TROUBLEACTION("Trouble - unselectable", BigInteger.ZERO,
+                new Goal("Increase your notoriety", 30, HUNDRED.multiply(BigInteger.valueOf(5*1000)),
+                        "Action gains +2 Finances multiplier and +10 Health cost!",
+                        "Increase this job's pay but also its Health cost"),
+                -1, 2, PREDAWN,
+                EVERYDAYACTION.availableDays,
+                -1, -1),
 		
 		LOOPENDACTION("End of Loop - unselectable", BigInteger.ZERO, 
-				null, 
+				null,
 				-1, -1, MORNING, 
 				EVERYDAYACTION.availableDays, 
 				-1, -1);
@@ -1992,6 +2041,7 @@ public class Game {
 			FINDTANAKAACTION.forbidden = true;
 			OSTENTATIOUSACTION.forbidden = true;
 			ADAPTIVEACTION.forbidden = true;
+            TROUBLEACTION.forbidden = true;
 			LOOPENDACTION.forbidden = true;
 
             DOORUNLOCKED.backup = HISTORYSNOOZE;
@@ -2122,8 +2172,12 @@ public class Game {
 			HOTELCHECKEVENING.financesCost = thousand(15);
 			HOTELCHECKMIDNIGHT.requiredFinances = 13;
 			HOTELCHECKMIDNIGHT.financesCost = thousand(15);
+            HOTELCHECKMIDNIGHT.backup = HOTELMIDNIGHT;
+            HOTELMIDNIGHT.backup = HOTELCHECKMIDNIGHT;
 			HOTELCHECKPREDAWN.requiredFinances = 13;
 			HOTELCHECKPREDAWN.financesCost = thousand(15);
+            HOTELCHECKPREDAWN.backup = HOTELPREDAWN;
+            HOTELPREDAWN.backup = HOTELCHECKPREDAWN;
 			
 			OFFICEMORNING.attributeMultiplier = one(4);
 			OFFICENOON.attributeMultiplier = one(4);
@@ -2132,13 +2186,28 @@ public class Game {
 			PARTYEARLY.attributeMultiplier = one(3);
 			PARTYLATE.attributeMultiplier = one(3);
 
-            TROUBLEEARLY.ownGoal.opposition = thousand(1);
-            TROUBLEEARLY.attributeMultiplier = one(2);
+            //TROUBLEEARLY.ownGoal.opposition = hundred(5);
+            TROUBLEEARLY.attributeMultiplier = one(6);
             TROUBLEEARLY.healthCost = one(40);
-            TROUBLELATE.attributeMultiplier = one(2);
+            TROUBLELATE.attributeMultiplier = one(6);
             TROUBLELATE.healthCost = one(40);
 
+            TROUBLEACTION.ownGoal.opposition = hundred(5);
+
             COORDINATE.goalMultiplier = one(3);
+
+            SPLURGE.requiredFinances = 14;
+            SPLURGE.financesCost = thousand(20);
+            SPLURGE.attributeMultiplier = one(2);
+            BINGE.requiredFinances = 14;
+            BINGE.financesCost = thousand(20);
+            BINGE.attributeMultiplier = one(2);
+
+            METEMPIRE.requiredFinances = 15;
+            METEMPIRE.financesCost = thousand(30);
+            METEMPIRE.ownGoal.opposition = hundred(1);
+            HOMEEMPIRE.healthCost = one(50);
+            HOMEEMPIRE.ownGoal.opposition = hundred(1);
 		}
 		
 		private Action(String s, BigInteger c, Goal g, int r, int a, int t, boolean[] d, int goalReq, int goalLevel) {
@@ -2163,9 +2232,15 @@ public class Game {
 		public Boolean isBartending() {
             return this == BARTEND || this == BARTENDEARLY || this == BARTENDLATE;
         }
+
+        public Boolean isTrouble() { return this == TROUBLEEARLY || this == TROUBLELATE; }
 		
 		public Boolean isLanguage() {
             return this == LANGUAGEMORNING || this == LANGUAGENOON || this == LANGUAGEAFTERNOON || this == LANGUAGEEVENING || this == LANGUAGEMIDNIGHT || this == LANGUAGEPREDAWN;
+        }
+
+        public Boolean isEmpire() {
+            return this == METEMPIRE || this == HOMEEMPIRE;
         }
 		
 	}
@@ -3238,9 +3313,6 @@ public class Game {
 							bars[i].startValue = bars[i].getValue();
 						}
 						if (bars[i].startValue != bars[i].endValue || bars[i].ownClock > 0 || bars[i].loops != 0) {
-                            if (i == 4) {
-                                System.out.println(bars[i].midValue + ", " + bars[i].endValue + ", " + bars[i].getValue());
-                            }
                             int thisFrameValue;
                             int scale;
                             if (bars[i].midValue < bars[i].endValue) {
@@ -4366,6 +4438,7 @@ public class Game {
 			addAttributeExperience(i, BigInteger.ZERO, true);
 			addRelationshipExperience(i, BigInteger.ZERO, true);
 		}
+        setPowerBonus();
 		Game.checkScheduleRoutineValidity(false);
 		addStamina(BigInteger.ZERO, true);
 		addHealth(BigInteger.ZERO, true);
@@ -4468,7 +4541,7 @@ public class Game {
             }
         }
 		
-		int epoch = 5;
+		int epoch = 6;
 		BigInteger[] opportunityCosts = new BigInteger[]{};
 		BigInteger relationshipValue = BigInteger.ZERO;
 		BigInteger attributeValue = BigInteger.ZERO;
@@ -4498,7 +4571,12 @@ public class Game {
 			relationshipValue = BigInteger.valueOf(30);
 			attributeValue = BigInteger.valueOf(40);
 			goalValue = BigInteger.valueOf(30);
-		}
+		} else if (epoch == 6) {
+            opportunityCosts = new BigInteger[]{one(24), one(16), one(16), one(24), one(32), one(64)};
+            relationshipValue = BigInteger.valueOf(30);
+            attributeValue = BigInteger.valueOf(54);
+            goalValue = BigInteger.valueOf(16);
+        }
 		for (int i = 0; i < Action.values().length; i++) {
 			Action a = Action.values()[i];
 			BigInteger staminaSpent = a.baseCost;
@@ -4506,7 +4584,11 @@ public class Game {
 				staminaSpent = staminaSpent.multiply(BigInteger.valueOf(3)).divide(BigInteger.valueOf(2));
 			} else if (epoch == 3) {
 				staminaSpent = staminaSpent.divide(BigInteger.valueOf(2));
-			}
+			} else if (epoch == 6) {
+                if (staminaSpent.compareTo(one(27)) >= 0) {
+                    staminaSpent = staminaSpent.multiply(BigInteger.valueOf(3)).divide(BigInteger.valueOf(2));
+                }
+            }
 			BigInteger relationshipAdded = staminaSpent;
 			BigInteger attributeAdded = staminaSpent;
 			BigInteger goalAdded = staminaSpent;
@@ -4550,7 +4632,16 @@ public class Game {
 				if (assessedHealth.compareTo(BigInteger.valueOf(0)) > 0) {
 					cost = cost.add(assessedHealth);
 				}
-			}
+			} else if (epoch == 6) {
+                if (a.relationship == 5 && a.ownSpot != null && a.ownSpot.ownLocale == Locale.COLLEGETOWN) {
+                    hidden = true;
+                }
+                cost = cost.add(a.financesCost.multiply(HUNDRED).divide(BigInteger.valueOf(1200)));
+                BigInteger assessedHealth = a.healthCost.subtract(one(21)).multiply(BigInteger.valueOf(5));
+                if (assessedHealth.compareTo(BigInteger.valueOf(0)) > 0) {
+                    cost = cost.add(assessedHealth);
+                }
+            }
 			if (!hidden) {
 				if (relationshipAdded.compareTo(BigInteger.ZERO) < 0) {
 					relationshipAdded = BigInteger.ZERO;
@@ -4618,7 +4709,29 @@ public class Game {
 							goalAdded = goalAdded.add(BigInteger.valueOf(1500));
 						}
 					}
-				}
+				} else if (epoch == 6) {
+                    if (a.attribute == 6) {
+                        attributeAdded = BigInteger.ZERO;
+                    }
+                    if (a.relationship == 6) {
+                        relationshipAdded = BigInteger.ZERO;
+                    }
+                    if (staminaSpent.compareTo(BigInteger.valueOf(4000)) >= 0) {
+                        if (a.attribute >= 0) {
+                            attributeAdded = attributeAdded.add(hundred(1));
+                        }
+                        if (a.ownGoal != null) {
+                            goalAdded = goalAdded.add(hundred(1));
+                        }
+                    } else {
+                        if (a.relationship >= 0) {
+                            relationshipAdded = relationshipAdded.add(BigInteger.valueOf(2500));
+                        }
+                        if (a.ownGoal != null) {
+                            goalAdded = goalAdded.add(BigInteger.valueOf(2500));
+                        }
+                    }
+                }
 				relationshipAdded = relationshipAdded.multiply(a.relationshipMultiplier);
 				attributeAdded = attributeAdded.multiply(a.attributeMultiplier);
 				goalAdded = goalAdded.multiply(a.goalMultiplier);
@@ -4626,10 +4739,15 @@ public class Game {
 					attributeAdded = attributeAdded.multiply(BigInteger.valueOf(250)).divide(HUNDRED);
 					goalAdded = BigInteger.ZERO;
 				}
+                if (a.isTrouble()) {
+                    attributeAdded = attributeAdded.multiply(one(4)).divide(HUNDRED);
+                    goalAdded = BigInteger.ZERO;
+                }
 				value = value.add(relationshipAdded.multiply(relationshipValue)).add(attributeAdded.multiply(attributeValue));
 				BigInteger divisor = opportunityCosts[a.availableSlot].add(staminaSpent);
+                BigInteger baseDivisor = divisor;
 				divisor = divisor.add(cost);
-				//System.out.println(a.name + ": " + format(value.divide(divisor)) + " + " + format(goalAdded.multiply(goalValue).divide(divisor)) + " = " + format(value.add(goalAdded.multiply(goalValue)).divide(divisor)));
+				//System.out.println(a.name + ": (" + format(value.divide(HUNDRED)) + " + " + format(goalAdded.multiply(goalValue).divide(HUNDRED)) + ") / (" + format(baseDivisor) + " + " + format(cost) + ") = " + format(value.add(goalAdded.multiply(goalValue)).divide(divisor)));
 			}
 		}
 		
@@ -5841,12 +5959,21 @@ public class Game {
         boolean[] checked = new boolean[totalGoals];
         for (int i = 1; i < checked.length; i++) {
             Goal usedGoal = getVisibleGoal(i, false);
-            if (usedGoal != null && usedGoal.opposition.compareTo(BigInteger.ZERO) > 0 && !checked[i]) {
+            System.out.println(i);
+            if (usedGoal != null && !checked[usedGoal.index] && usedGoal.opposition.compareTo(BigInteger.ZERO) > 0 && simulatedGoals[usedGoal.index].compareTo(usedGoal.previousRequirements.add(usedGoal.requirement)) < 0) {
+                //System.out.println(usedGoal.name + ", " + format(simulatedGoals[usedGoal.index]) + ", " + format(usedGoal.previousRequirements) + ", " + format(usedGoal.requirement));
                 BigInteger removed = usedGoal.opposition;
-                if (removed.compareTo(simulatedGoals[i].subtract(usedGoal.previousRequirements)) > 0) {
-                    removed = simulatedGoals[i].subtract(usedGoal.previousRequirements);
+                if (removed.compareTo(simulatedGoals[usedGoal.index].subtract(usedGoal.previousRequirements)) > 0) {
+                    removed = simulatedGoals[usedGoal.index].subtract(usedGoal.previousRequirements);
                 }
-                simulatedGoals[i] = simulatedGoals[i].subtract(removed);
+                simulatedGoals[usedGoal.index] = simulatedGoals[usedGoal.index].subtract(removed);
+                if (extraProgress[usedGoal.index].add(simulatedGoals[usedGoal.index]).compareTo(usedGoal.previousRequirements.add(usedGoal.requirement)) >= 0) {
+                    extraProgress[usedGoal.index] = usedGoal.previousRequirements.add(usedGoal.requirement).subtract(simulatedGoals[usedGoal.index].add(BigInteger.ONE));
+                }
+                simulatedGoals[usedGoal.index] = simulatedGoals[usedGoal.index].add(extraProgress[usedGoal.index]);
+                usedGoal.storedString = usedGoal.name + ": " + format(simulatedGoals[usedGoal.index].subtract(usedGoal.previousRequirements), usedGoal.requirement) + "/" + format(usedGoal.requirement);
+                usedGoal.barEnd = 1000 - simulatedGoals[usedGoal.index].subtract(usedGoal.previousRequirements).multiply(THOUSAND).divide(usedGoal.requirement).intValue();
+                checked[usedGoal.index] = true;
             }
             checked[i] = true;
         }
@@ -5860,6 +5987,8 @@ public class Game {
             setTransparent();
 			currentPlaythrough.currentLocale.currentSpot = getAllowedSpots(currentPlaythrough.currentLocale, TimeSlot.values()[0])[0];
 		}
+
+        setPowerBonus();
 		
 		addStamina(BigInteger.ZERO, true);
 		
@@ -6142,6 +6271,25 @@ public class Game {
 					result = result.add(THOUSAND);
 				}
 			}
+        } else if (v == Achievement.EMPIRE) {
+            if (p == currentPlaythrough) {
+                result = BigInteger.valueOf((getGoalLevel(33, false) + getGoalLevel(34, false)) * 5000L);
+            } else {
+                BigInteger cost = Action.METEMPIRE.ownGoal.requirement;
+                BigInteger progress = p.goals[33];
+                while (progress.compareTo(cost) >= 0) {
+                    progress = progress.subtract(cost);
+                    cost = cost.add(cost);
+                    result = result.add(BigInteger.valueOf(5).multiply(THOUSAND));
+                }
+                cost = Action.HOMEEMPIRE.ownGoal.requirement;
+                progress = p.goals[34];
+                while (progress.compareTo(cost) >= 0) {
+                    progress = progress.subtract(cost);
+                    cost = cost.add(cost);
+                    result = result.add(BigInteger.valueOf(5).multiply(THOUSAND));
+                }
+            }
 		} else if (v == Achievement.BELOVED) {
 			for (int i = 0; i < p.relationships.length; i++) {
 				if (p == currentPlaythrough) {
@@ -6223,8 +6371,8 @@ public class Game {
 			gainedRelationship = BigInteger.valueOf(5000);
 		}
 		if (a.relationship >= 0) {
-			if (currentPlaythrough.upgradeLevels[24] > 0 && a.healthCost.compareTo(BigInteger.ZERO) > 0) {
-				gainedRelationship = gainedRelationship.add(a.healthCost.multiply(BigInteger.valueOf(currentPlaythrough.upgradeLevels[24])).divide(BigInteger.TEN));
+			if (currentPlaythrough.upgradeLevels[24] > 0 && getHealthCost(a).compareTo(BigInteger.ZERO) > 0) {
+				gainedRelationship = gainedRelationship.add(getHealthCost(a).multiply(BigInteger.valueOf(currentPlaythrough.upgradeLevels[24])).divide(BigInteger.TEN));
 			}
 			if (stanceRoutine() == RoutineElements.VULNERABLE) {
 				gainedRelationship = gainedRelationship.add(BigInteger.valueOf(5000));
@@ -6239,7 +6387,9 @@ public class Game {
 			gainedRelationship = gainedRelationship.multiply(charismaMultiplier()).divide(HUNDRED);
 			if (equipmentRoutine() == RoutineElements.EYECATCHING) {
 				gainedRelationship = gainedRelationship.multiply(BigInteger.valueOf(2));
-			}
+			} else if (equipmentRoutine() == RoutineElements.UNIFORM && a.relationship != 5) {
+                gainedRelationship = BigInteger.ZERO;
+            }
 			if (bodyRoutine() == RoutineElements.SCARRED) {
 				gainedRelationship = gainedRelationship.multiply(BigInteger.valueOf(4)).divide(BigInteger.valueOf(5));
 			}
@@ -6251,8 +6401,8 @@ public class Game {
 			gainedAttribute = BigInteger.valueOf(2000);
 		}
 		if (a.attribute >= 0) {
-			if (currentPlaythrough.upgradeLevels[24] > 0 && a.healthCost.compareTo(BigInteger.ZERO) > 0) {
-				gainedAttribute = gainedAttribute.add(a.healthCost.multiply(BigInteger.valueOf(currentPlaythrough.upgradeLevels[24])).divide(BigInteger.TEN));
+			if (currentPlaythrough.upgradeLevels[24] > 0 && getHealthCost(a).compareTo(BigInteger.ZERO) > 0) {
+				gainedAttribute = gainedAttribute.add(getHealthCost(a).multiply(BigInteger.valueOf(currentPlaythrough.upgradeLevels[24])).divide(BigInteger.TEN));
 			}
 			 if (stanceRoutine() == RoutineElements.FOCUSED) {
 				gainedAttribute = gainedAttribute.add(BigInteger.valueOf(1500));
@@ -6277,8 +6427,8 @@ public class Game {
 			gainedGoal = ten(2);
 		}
 		if (a.ownGoal != null && !allGoalsComplete(a.ownGoal.index, false)) {
-			if (currentPlaythrough.upgradeLevels[24] > 0 && a.healthCost.compareTo(BigInteger.ZERO) > 0) {
-				gainedGoal = gainedGoal.add(a.healthCost.multiply(BigInteger.valueOf(currentPlaythrough.upgradeLevels[24])).divide(BigInteger.TEN));
+			if (currentPlaythrough.upgradeLevels[24] > 0 && getHealthCost(a).compareTo(BigInteger.ZERO) > 0) {
+				gainedGoal = gainedGoal.add(getHealthCost(a).multiply(BigInteger.valueOf(currentPlaythrough.upgradeLevels[24])).divide(BigInteger.TEN));
 			}
 			if (stanceRoutine() == RoutineElements.TOUGH) {
 				gainedGoal = gainedGoal.add(THOUSAND);
@@ -6293,7 +6443,9 @@ public class Game {
             }
 			if (equipmentRoutine() == RoutineElements.LARCENY) {
 				gainedGoal = gainedGoal.multiply(BigInteger.valueOf(3)).divide(BigInteger.valueOf(2));
-			}
+			} else if (equipmentRoutine() == RoutineElements.UNIFORM && a.relationship != 5) {
+                gainedGoal = BigInteger.ZERO;
+            }
 			if (!getGoalMultiplier(a).equals(HUNDRED)) {
 				gainedGoal = gainedGoal.multiply(getGoalMultiplier(a)).divide(HUNDRED);
 			}
@@ -6311,7 +6463,9 @@ public class Game {
 		BigInteger result = a.attributeMultiplier;
 		if (a.isBartending()) {
 			result = result.add(BigInteger.valueOf(50L *getGoalLevel(7, false)));
-		}
+		} else if (a.isTrouble()) {
+            result = result.add(BigInteger.valueOf(200L * getGoalLevel(30, false)));
+        }
         if (!a.forbidden && currentPlaythrough.currentDay < currentPlaythrough.upgradeLevels[21]) {
             result = result.multiply(BigInteger.valueOf(3));
         }
@@ -6329,6 +6483,14 @@ public class Game {
 	public static BigInteger getGoalMultiplier(Action a) {
 		return a.goalMultiplier;
 	}
+
+    public static BigInteger getHealthCost(Action a) {
+        BigInteger result = a.healthCost;
+        if (a.isTrouble()) {
+            result = result.add(BigInteger.valueOf(getGoalLevel(30, false)).multiply(one(10)));
+        }
+        return result;
+    }
 	
 	public static Scene getPlotScene(PlotEvent p) {
 		if (p == null) {
@@ -12371,6 +12533,29 @@ public class Game {
                 result.backgrounds[0] = "black";
                 result.screens[0].attach("Placeholder - " + Heilig() + " begins to trust the protagonist enough to involve " + himHer(-1) + " in more experiments.");
             }
+        } else if (g.index == 19) {
+            if (g.tier == 0) {
+                result = new Scene(3);
+
+                result.backgrounds[0] = "club";
+                if (getCurrentAction().ownSpot == Spot.DOWNTOWN) {
+                    result.backgrounds[0] = "suburb";
+                }
+                result.screens[0].attach("It's one thing to have a few close friends you share a genuine connection with.  It's another thing entirely to be popular.  As you've spent time socializing with " + Tanaka() + "'s admirers and with the larger social circle of students at the nightclub, you've gotten to know them pretty well, but you don't have any illusions about how important you are to each other.\n\n");
+                result.screens[0].attach("Most 'friends' are just people whose life circumstances just happen to put them in the same room on a regular basis.  If you act in a way that causes those people to enjoy the time they end up spending with you, then you become popular.  People might even start going out of their way to spend time in the same place as you.  That doesn't mean that you'd actually make any serious sacrifices for each other's sake.");
+
+                if (currentPlaythrough.personStatus[5] != Locale.COLLEGETOWN) {
+                    result.screens[1].attach("The aftermath of " + Tanaka() + "'s abduction showed just how fragile that kind of relationship can be.  Plenty of " + hisHer(5) + " admirers were willing to part with cash in order to try to save " + himHer(5) + ", but only because they dreamed of receiving " + Tanaka() + "'s gratitude.  Their motivations were ultimately selfish.  And when it became clear that the costs would outweigh the rewards, they gave up.\n\n");
+                } else {
+                    result.screens[1].attach("It's enough to make you reconsider the way you've been thinking about " + Tanaka() + "'s position here.  " + HeShe(5) + " may be the " + kingQueen(5) + " of this castle, but it's a castle built of sand.  " + HisHer(5) + " admirers don't really want " + himHer(5) + " to be happy - they want themselves to be happy, and getting attention from " + Tanaka() + " is only a means to that end.\n\n");
+                }
+                result.screens[1].attach("Without a doubt, your own popularity is no more valuable than " + hisHers(5) + ".");
+
+                result.screens[2].attach("But that's not to say that becoming popular has been a waste of time.  In your casual friends here, you can see distorted reflections of the people you spend more of your time with.  One friend might be an introvert like " + Yumeno() + ", but not quite as smart.  Another might be aggressive like " + Hashimoto() + ", but without " + Hashimoto() + "'s singleminded focus on whatever trouble " + heShe(0) + "'s trying to cause.\n\n");
+                result.screens[2].attach("Spending time with other people makes you appreciate your actual friends even more.\n\n");
+                result.screens[2].attach("And it's illuminating, too.  What exactly is it that makes " + Yumeno() + " more effective at achieving " + hisHer(1) + " goals than other people who live similar lifestyles?  If you can identify that factor, then you can apply it to your own life.\n\n");
+                result.screens[2].attach("So, maybe it'd be a good idea to spend more time socializing with your peers.  They certainly don't seem to mind.");
+            }
         } else if (g.index == 20) {
             result = new Scene(1);
 
@@ -13084,24 +13269,32 @@ public class Game {
 				result.screens[12].attach("After that, you and " + Hashimoto() + " return to a pretty normal session of hanging out together.  But now you have a better idea of what's going on inside " + hisHer(0) + " mind as " + heShe(0) + " searches for meaning inside the books you're reading together.  " + HeShe(0) + " must be grappling with some pretty heavy questions.\n\n");
 				result.screens[12].attach("All the while, the fake ID card sits in your pocket.  If " + Hashimoto() + " paid for this by selling off a rich guy's favorite car, then this really might be the most expensive gift you've ever received.  And if you're willing to take the risk, then it could prove useful enough to be worth that cost.");
 			}
-		} else if (g.index == 28) {
-			if (g.tier == 0) {
-				result = new Scene(41);
+		} else {
+            return getCompletionScene3(g);
+        }
+		return result;
+	}
 
-				result.backgrounds[0] = "metropolis";
-				result.screens[0].attach("As tempting as it was to just rush in the front door to rescue " + Tanaka() + " as soon as you arrived here, it seemed more prudent to wait until after dark.  It's given you a chance to get a feel for the city, to practice the language with actual native speakers, and to plan.\n\n");
-				result.screens[0].attach("You have no doubt that the address " + Jackal() + " gave you is the right one.  It points to a sprawling compound not far from the city center, all of it newly-constructed.  The buildings look nothing like the street view available online, though.  Everything has been demolished and replaced sometime in the last couple of months.\n\n");
-				result.screens[0].attach("The entire compound is surrounded by a high wall, like a fortress right in the middle of the city.  However, by making your way to the rooftops of the nearby buildings, you've still been able to get a pretty good view of the inside.  The compound is packed full of men equipped with military gear.  Is it normal for the gangs in this country to be so well-armed?\n\n");
-				result.screens[0].attach("On top of that, some of the buildings look to be storage warehouses, and there's a steady stream of heavy trucks passing through the compound's main gate to unload their cargo inside.  You've even caught sight of a couple of helicopters landing on the roof of the largest central building.  Just how big of an operation are they running here?");
+    public static Scene getCompletionScene3(Goal g) {
+        Scene result = null;
+        if (g.index == 28) {
+            if (g.tier == 0) {
+                result = new Scene(41);
 
-				result.screens[1].attach("Maybe it would have been smarter to spend a few days investigating this group before making your move.  This is on a completely different scale from the small-time gangs ");
+                result.backgrounds[0] = "metropolis";
+                result.screens[0].attach("As tempting as it was to just rush in the front door to rescue " + Tanaka() + " as soon as you arrived here, it seemed more prudent to wait until after dark.  It's given you a chance to get a feel for the city, to practice the language with actual native speakers, and to plan.\n\n");
+                result.screens[0].attach("You have no doubt that the address " + Jackal() + " gave you is the right one.  It points to a sprawling compound not far from the city center, all of it newly-constructed.  The buildings look nothing like the street view available online, though.  Everything has been demolished and replaced sometime in the last couple of months.\n\n");
+                result.screens[0].attach("The entire compound is surrounded by a high wall, like a fortress right in the middle of the city.  However, by making your way to the rooftops of the nearby buildings, you've still been able to get a pretty good view of the inside.  The compound is packed full of men equipped with military gear.  Is it normal for the gangs in this country to be so well-armed?\n\n");
+                result.screens[0].attach("On top of that, some of the buildings look to be storage warehouses, and there's a steady stream of heavy trucks passing through the compound's main gate to unload their cargo inside.  You've even caught sight of a couple of helicopters landing on the roof of the largest central building.  Just how big of an operation are they running here?");
+
+                result.screens[1].attach("Maybe it would have been smarter to spend a few days investigating this group before making your move.  This is on a completely different scale from the small-time gangs ");
                 if (getGoalLevel(15, false) < 2) {
                     result.screens[1].attach(Jackal() + " told you about ");
                 } else {
                     result.screens[1].attach("you went up against ");
                 }
                 result.screens[1].attach("back home.  But at the same time, every extra day spent delaying is another chance for the trail to go cold again.  As soon as night falls, you begin your final preparations.\n\n");
-				result.screens[1].attach("It seems like the streets of this city are never completely empty, but even with a few pedestrians around, you can still do what you need to do.  The wall isn't actually much of an obstacle.  All you have to do is tie a metal hook to the end of a rope, throw it over, and climb up.  You hear some startled exclamations from below, but you pay them no mind, swinging yourself over the top of the wall, pulling the rope up after you, and then sliding back down to the ground on the other side.\n\n");
+                result.screens[1].attach("It seems like the streets of this city are never completely empty, but even with a few pedestrians around, you can still do what you need to do.  The wall isn't actually much of an obstacle.  All you have to do is tie a metal hook to the end of a rope, throw it over, and climb up.  You hear some startled exclamations from below, but you pay them no mind, swinging yourself over the top of the wall, pulling the rope up after you, and then sliding back down to the ground on the other side.\n\n");
                 result.screens[1].attach("That was the easy part.  Now, things will get more difficult.");
 
                 result.backgrounds[2] = "black";
@@ -13116,38 +13309,38 @@ public class Game {
                 result.screens[3].attach("Time to move again.");
 
                 result.backgrounds[4] = "black";
-				result.sounds[4] = Effect.RUN;
+                result.sounds[4] = Effect.RUN;
                 result.screens[4].attach("You need a better hiding spot.  You had hoped that you'd be able to sneak into a storage area and maybe steal a uniform or something, but there are still too many people around, even at this hour.  You'll need to try something else.\n\n");
-				result.screens[4].attach("Your backup plan was to see if you could enter the ventilation system.  You doubt that you'll be able to use it to get inside the buildings, since the ducts will get too small to crawl through.  But the vents that exchange air with the outside are larger, big enough that they caught your attention while you were scouting the compound from the rooftops.  If you can unscrew the cover on one of those and climb inside, you should be able to hide for as long as you want to.\n\n");
-				result.screens[4].attach("And you had already memorized the locations of all of them.  You move swiftly, turning around the corner that will lead you to the nearest air conditioning unit-");
+                result.screens[4].attach("Your backup plan was to see if you could enter the ventilation system.  You doubt that you'll be able to use it to get inside the buildings, since the ducts will get too small to crawl through.  But the vents that exchange air with the outside are larger, big enough that they caught your attention while you were scouting the compound from the rooftops.  If you can unscrew the cover on one of those and climb inside, you should be able to hide for as long as you want to.\n\n");
+                result.screens[4].attach("And you had already memorized the locations of all of them.  You move swiftly, turning around the corner that will lead you to the nearest air conditioning unit-");
 
-				result.backgrounds[5] = "tanaka8";
-				result.screens[5].attach("Only to come face-to-face with a trio of patrolling soldiers.\n\n");
-				result.screens[5].attach("These ones are equipped differently than the ones you saw from the rooftops.  Their armor is different, bulkier, with not even an inch of skin showing.  The helmets have integrated gas masks, and red light shines from within the visor.\n\n");
-				result.screens[5].attach("Were these soldiers dispatched as a result of your intrusion?  You haven't heard any audible alarm, but maybe the entire compound is on high alert.");
+                result.backgrounds[5] = "tanaka8";
+                result.screens[5].attach("Only to come face-to-face with a trio of patrolling soldiers.\n\n");
+                result.screens[5].attach("These ones are equipped differently than the ones you saw from the rooftops.  Their armor is different, bulkier, with not even an inch of skin showing.  The helmets have integrated gas masks, and red light shines from within the visor.\n\n");
+                result.screens[5].attach("Were these soldiers dispatched as a result of your intrusion?  You haven't heard any audible alarm, but maybe the entire compound is on high alert.");
 
-				result.backgrounds[6] = "black";
-				result.tracks[6] = Music.SILENCE;
-				result.sounds[6] = Effect.GUNFIRE;
-				result.screens[6].attach("The soldiers raise their guns, and you duck back around the corner only a moment before they open fire.  Dozens of bulletholes appear in the wall just behind where you were standing.\n\n");
-				result.screens[6].attach("It suddenly occurs to you that you might have underestimated this 'gang'.\n\n");
-				if (getGoalLevel(15, false) >= 2) {
-					result.screens[6].attach("You had been following the same playbook that you had used alongside " + Jackal() + " when dealing with the local gangs back home.  ");
-				} else {
-					result.screens[6].attach("You had been following the advice that " + Jackal() + " gave you for dealing with gangs like the ones back home.  ");
-				}
-				result.screens[6].attach("It might have worked well against street thugs with little motivation and even less loyalty toward their gang bosses.  Getting past them is just a matter of waiting for them to get lazy and let their guard down.\n\n");
-				result.screens[6].attach("But this organization is something completely different.  It's obvious by now that they can't just be called a 'gang'.  They're a full-fledged paramilitary force.  They have coordination, they have armaments, and they have the willingness to kill without hesitation.  Even if you had taken the time to fully prepare, it's hard to imagine how you'd be able to triumph against all of that.");
+                result.backgrounds[6] = "black";
+                result.tracks[6] = Music.SILENCE;
+                result.sounds[6] = Effect.GUNFIRE;
+                result.screens[6].attach("The soldiers raise their guns, and you duck back around the corner only a moment before they open fire.  Dozens of bulletholes appear in the wall just behind where you were standing.\n\n");
+                result.screens[6].attach("It suddenly occurs to you that you might have underestimated this 'gang'.\n\n");
+                if (getGoalLevel(15, false) >= 2) {
+                    result.screens[6].attach("You had been following the same playbook that you had used alongside " + Jackal() + " when dealing with the local gangs back home.  ");
+                } else {
+                    result.screens[6].attach("You had been following the advice that " + Jackal() + " gave you for dealing with gangs like the ones back home.  ");
+                }
+                result.screens[6].attach("It might have worked well against street thugs with little motivation and even less loyalty toward their gang bosses.  Getting past them is just a matter of waiting for them to get lazy and let their guard down.\n\n");
+                result.screens[6].attach("But this organization is something completely different.  It's obvious by now that they can't just be called a 'gang'.  They're a full-fledged paramilitary force.  They have coordination, they have armaments, and they have the willingness to kill without hesitation.  Even if you had taken the time to fully prepare, it's hard to imagine how you'd be able to triumph against all of that.");
 
-				result.sounds[7] = Effect.RUN;
-				result.screens[7].attach("You start running again, but this time, your only goal is your own immediate survival.  You hear pursuing footsteps behind.\n\n");
-				result.screens[7].attach("Even as you run, your mind races.  What should you do now?  Try breaking a window or kicking down a door?  But even if you had the time, going deeper into the compound will just leave you completely surrounded by the enemy.  It might be time to give up on finding a clue to " + Tanaka() + "'s whereabouts here.  For now, you just need to avoid getting shot or captured.\n\n");
-				result.screens[7].attach("And even that might be too much to hope for.  You hear approaching footsteps from ahead, too.  The soldiers are closing in.  You have no choice but to head back for the cargo loading area.  If you can reach the wall, then maybe you can climb back over it.");
+                result.sounds[7] = Effect.RUN;
+                result.screens[7].attach("You start running again, but this time, your only goal is your own immediate survival.  You hear pursuing footsteps behind.\n\n");
+                result.screens[7].attach("Even as you run, your mind races.  What should you do now?  Try breaking a window or kicking down a door?  But even if you had the time, going deeper into the compound will just leave you completely surrounded by the enemy.  It might be time to give up on finding a clue to " + Tanaka() + "'s whereabouts here.  For now, you just need to avoid getting shot or captured.\n\n");
+                result.screens[7].attach("And even that might be too much to hope for.  You hear approaching footsteps from ahead, too.  The soldiers are closing in.  You have no choice but to head back for the cargo loading area.  If you can reach the wall, then maybe you can climb back over it.");
 
-				result.backgrounds[8] = "tanaka7";
-				result.sounds[8] = Effect.GUNFIRE;
-				result.screens[8].attach("Gunfire tears up the ground beneath your feet as you make the last sprint toward the compound's wall.  You dive down behind a cargo pallet, and you can feel it shake with the impact of the bullets.  Some officer here is probably going to be pretty annoyed at having his shipment shot up.\n\n");
-				result.screens[8].attach("But this might be the end of the road for you.  By now, half a dozen soldiers have their sights trained on your position.  If you try to climb back over the wall, they'll fill you with holes before you're even halfway up.\n\n");
+                result.backgrounds[8] = "tanaka7";
+                result.sounds[8] = Effect.GUNFIRE;
+                result.screens[8].attach("Gunfire tears up the ground beneath your feet as you make the last sprint toward the compound's wall.  You dive down behind a cargo pallet, and you can feel it shake with the impact of the bullets.  Some officer here is probably going to be pretty annoyed at having his shipment shot up.\n\n");
+                result.screens[8].attach("But this might be the end of the road for you.  By now, half a dozen soldiers have their sights trained on your position.  If you try to climb back over the wall, they'll fill you with holes before you're even halfway up.\n\n");
                 result.screens[8].attach("Making a run for it again might let you survive a bit longer, since there are other cargo pallets to use as cover.  But there must be soldiers closing in from all directions now.  If climbing back over the wall is difficult now, then giving the soldiers more time to surround you will only make it harder.\n\n");
                 result.screens[8].attach("Should you surrender?  The soldiers seemed eager to shoot you on-sight, but if you make it clear that you won't run, they might prefer to capture you instead.\n\n");
                 result.screens[8].attach("Would that really be any better, though?  Once they capture you, you won't have any way of escaping.  A tiny chance of climbing up over the wall might be better than a certain death in captivity.");
@@ -13364,14 +13557,158 @@ public class Game {
 
                 result.backgrounds[40] = "metropolis";
                 if (currentPlaythrough.weeklyActions[weekDayNumber()][3].ownSpot == Spot.HOTEL || currentPlaythrough.weeklyActions[weekDayNumber()][5].ownSpot == Spot.HOTEL) {
-                    result.screens[40].attach("You head back to your hotel room.  It's a nice place, so you aren't entirely unhappy to have an excuse to stay there longer.");
+                    result.screens[40].attach("You head back to your hotel room.  It's a nice place, so you aren't entirely unhappy to have an excuse to stay there longer.\n\n");
                 } else {
-                    result.screens[40].attach("You head back to your apartment to finish unpacking your things.  Seems like you might need to get used to sleeping there.");
+                    result.screens[40].attach("You head back to your apartment to finish unpacking your things.  Seems like you might need to get used to sleeping there.\n\n");
                 }
-			}
-		}
-		return result;
-	}
+                result.screens[40].attach("(");
+                result.screens[40].attach("Opposed goals", 6);
+                result.screens[40].attach(" have been unlocked!  These goals have lower requirements, but the world pushing back against you causes them to lose progress over time.)");
+            } else if (g.tier == 1) {
+                result = new Scene(20);
+
+                result.backgrounds[0] = "lounge";
+                result.tracks[0] = Music.WAY;
+                if (loopActionFirstUsed(Action.RENDEZVOUS, currentPlaythrough) > currentPlaythrough.currentDay+3) {
+                    result.screens[0].attach("Even though you've been in the Metropolis for awhile now, little of that time has been spent with " + Tanaka() + ".  ");
+                } else {
+                    result.screens[0].attach("It looks like " + Tanaka() + " wasn't exaggerating when " + heShe(5) + " told you how hard it would be for the two of you to meet up in private.  ");
+                }
+                result.screens[0].attach("Between " + hisHer(5) + " duties as a 'recruiter' and " + hisHer(5) + " involvement in the Syndicate's operations in this city, " + heShe(5) + " has very little free time.  And even during that free time, " + heShe(5) + " can't leave the Syndicate compound without facing dangerous questions about where " + heShe(5) + " was and what " + heShe(5) + " was doing.\n\n");
+                result.screens[0].attach("Whoever made these rules was clearly aware that some of the people recruited into the Syndicate would be looking for a way out.  They're designed to prevent members from having prolonged contact with outsiders.  It really is like some sort of cult.\n\n");
+                result.screens[0].attach("But as long as you're passing yourself off as a consultant who's working on behalf of the Syndicate, and as long as your meetings with " + Tanaka() + " are brief and conducted within the compound, you should be able to avoid suspicion.  At least, " + Tanaka() + " seems to think you'll be able to get away with it.");
+
+                result.characters[1] = new String[]{"tanaka"};
+                result.outfits[1] = new String[]{"Syndicate"};
+                result.emotions[1] = new String[]{"Grin"};
+                result.screens[1].attach("Mostly, you've been trying to use this time to figure out a way for " + Tanaka() + " to make " + hisHer(5) + " escape.  But whenever you find yourselves out of earshot of any other Syndicate personnel, you end up slipping back into inconsequential smalltalk.\n\n");
+                result.screens[1].attach("\"Yeah, my grandma grew up in a village not far from here.  I picked up the language from her and my cousins.\"\n\n", 5);
+                result.screens[1].attach("Well, that explains why " + heShe(5) + "'s more fluent than you are.\n\n");
+                result.screens[1].attach("\"What about you?  Do you also have family from around here?  It's funny to think that we could've been speaking our own private language back home, and nobody else would've been able to know what we were talking about.\"", 5);
+
+                result.emotions[2] = new String[]{"Lovestruck"};
+                if (loopActionFirstUsed(Action.LANGUAGECOURSE, currentPlaythrough) > 0 && loopActionFirstUsed(Action.LANGUAGECOURSE, currentPlaythrough) <= classStartDay) {
+                    result.screens[2].attach("Actually, you only started studying the language when you heard about a job opportunity in this country, shortly before " + hisHer(5) + " abduction.\n\n");
+                } else {
+                    result.screens[2].attach("Actually, you only started learning the language after " + Tanaka() + " was abducted.\n\n");
+                }
+                result.screens[2].attach("\"Wait, seriously?  Then... you went from not knowing the language at all to speaking it with complete fluency in...\"\n\n", 5);
+                if (languageLearningInterval(currentPlaythrough) < 5) {
+                    result.screens[2].attach("A few days.  You figured out the grammatical structure pretty quickly, and then you spent the flight over studying the vocabulary.\n\n");
+                } else if (languageLearningInterval(currentPlaythrough) < 30) {
+                    result.screens[2].attach("A few weeks.  For awhile, you were pretty much spending your time on nothing but studying.\n\n");
+                } else {
+                    result.screens[2].attach("A month or two.  You just worked some regular studying into your daily routine.\n\n");
+                }
+                result.screens[2].attach("\"That's crazy.  Normally, studying a language is something you'd take classes on for a year or more.\"\n\n", 5);
+                result.screens[2].attach("Well, it might take that long if you were doing it for one hour per day plus homework.  But in your case, you were in a hurry.  ");
+                if (loopActionFirstUsed(Action.LANGUAGECOURSE, currentPlaythrough) > 0 && loopActionFirstUsed(Action.LANGUAGECOURSE, currentPlaythrough) <= classStartDay) {
+                    result.screens[2].attach("Especially after it became clear that " + Tanaka() + "'s fate might depend on it.");
+                } else {
+                    result.screens[2].attach("You had no idea what " + Tanaka() + " might be going through.");
+                }
+
+                result.emotions[3] = new String[]{"Neutral"};
+                result.screens[3].attach("\"You really are amazing.  It's a good thing, too, because most people wouldn't stand a chance of surviving a plan like this.\"\n\n", 5);
+                result.screens[3].attach("That's right.  This is what you originally came here to discuss.  As you've talked to " + Tanaka() + ", you've gradually started to get an idea of the situation in this city.  The Syndicate is fighting to take control, block by block, and new developments are happening on a daily basis.  It's a struggle to keep up with it all, let alone anticipate what's coming next and figure out how to use it to your advantage.\n\n");
+                result.screens[3].attach("But now, the two of you are pretty sure that you have a good plan.  That is, assuming the situation hasn't already changed.\n\n");
+                result.screens[3].attach("\"No, I think the Autorimessa district is still our best bet.  But we'll have to move fast.  If either side seizes a decisive advantage, then we'll lose our chance.\"", 5);
+
+                result.emotions[4] = new String[]{"Smug"};
+                result.screens[4].attach("Right now, the Syndicate is embroiled in a turf war with the Branch, the group of organized crime families which owned the city before the Syndicate's arrival.  If " + Tanaka() + "'s analysis is correct, that can be used to your advantage.\n\n");
+                result.screens[4].attach("\"When recruiting new members, we always present the Lunar Syndicate as if it's some sort of almighty global conspiracy with unlimited funds and resources.\"\n\n", 5);
+                result.screens[4].attach("It certainly looks the part, what with this sprawling compound and all the advanced military hardware.\n\n");
+                result.screens[4].attach("\"But it was all bought with borrowed money.  The Syndicate controls a few local corporations, and it uses those corporations to handle stuff like buying land and lobbying local politicians.  But those corporations are all deep, deep in debt.\"\n\n", 5);
+                result.screens[4].attach("And that's what gave " + Tanaka() + " the idea to attack the Syndicate where it's weakest - its finances.");
+
+                result.emotions[5] = new String[]{"Neutral"};
+                result.screens[5].attach("\"The Syndicate has only one steady source of income - the 'protection' money it extorts from local businesses.  We threaten to smash their storefronts and burn them to the ground unless they pay us.  And once they do pay us, we make sure that nobody else can threaten them in the same way.  They become part of our turf.\"\n\n", 5);
+                result.screens[5].attach("It's just petty crime.  Hard to imagine that it's enough to cover the expenses of an organization as large as the Lunar Syndicate.\n\n");
+                result.screens[5].attach("\"It doesn't even come close to covering our expenses.  But it's enough to pay the interest on the loans we take out to cover those expenses.\"\n\n", 5);
+                result.screens[5].attach("So the Syndicate is just digging itself deeper and deeper into debt?  Where does it end?\n\n");
+                result.screens[5].attach("\"The coup.  I think that's " + Artemis() + "'s ultimate goal.  Once the government has been replaced with Syndicate stooges, they'll be able to hire our companies at a ridiculously high rate to do some trivial work.  The foreign bankers will get their money, and we'll be left with control of the country.\"", 5);
+
+                result.emotions[6] = new String[]{"Shifty"};
+                result.screens[6].attach("\"But until the day it seizes control, the Syndicate is still vulnerable.  If it can't make the interest payments, then the banks will stop offering more loans.  And without those loans, it can't keep up with its operating expenses.  " + Artemis() + "'s plan would fail before even having a chance to be carried out.\"\n\n", 5);
+                result.screens[6].attach("Does " + Tanaka() + " think it might be possible to bring down the entire Lunar Syndicate?\n\n");
+                result.screens[6].attach("\"I wouldn't go quite that far.  And even if it were possible, it wouldn't be a good idea.  If the Branch wins here, then their first order of business is going to be to wipe all traces of the Syndicate from the city.  I've... committed a few crimes in my time here.  They definitely wouldn't let me off the hook.\"", 5);
+
+                result.emotions[7] = new String[]{"Smug"};
+                result.screens[7].attach("\"We don't need to bring the Syndicate down, though.  We just need to give it a prod in the right direction.  The higher-ups know how precarious our money situation is.  If anything happens to threaten it, they'll take extreme measures to sort it out.\"\n\n", 5);
+                result.screens[7].attach("And that's where you come in.\n\n");
+                result.screens[7].attach("\"Right.  At the moment, the Syndicate is running into a lot of trouble in the Autorimessa district.  The Branch is fighting hard to retake control from us.  It's becoming a serious drain on our resources.\"", 5);
+
+                result.emotions[8] = new String[]{"Neutral"};
+                result.screens[8].attach("\"And with your skills... you might be able to tip the balance.\"\n\n", 5);
+                result.screens[8].attach("You'll be fighting against the Syndicate.  It's an intimidating prospect, given how poorly your attempt to infiltrate the compound went.  But now that " + Tanaka() + " has told you all about how their organization works, you can see that they're not invincible.\n\n");
+                result.screens[8].attach("\"And you don't really need to win.  You just need to create an opening for the Branch to push back.  Make some chaos, make it look like the Syndicate isn't doing a good job of protecting its territory.  Make it clear to the Syndicate leadership that something needs to change.\"", 5);
+
+                result.emotions[9] = new String[]{"Smug"};
+                result.screens[9].attach("\"Then, I'll make my move.  I've already got the leadership warmed up to the idea of putting me in charge of my own territory.  So I tell them, 'Give me the Autorimessa district.  I can make it profitable.  I bet my life on it'.\"\n\n", 5);
+                result.screens[9].attach("Is " + Tanaka() + " so certain that " + heShe(5) + "'ll be able to do that, though?\n\n");
+                result.screens[9].attach("\"The current commander there is an idiot and an asshole.  Nobody likes him.  The troops will be more motivated if I'm the one giving the orders.  And besides, once you stop working against the Syndicate there, I'll have an easier job than he did, so it shouldn't be hard to do at least a little better.\"\n\n", 5);
+
+                result.emotions[10] = new String[]{"Shifty"};
+                result.screens[10].attach("If needed, you could also actively switch sides and start causing trouble on the Branch side of the district instead.  That would make it even easier for " + Tanaka() + " to seize control, right?\n\n");
+                result.screens[10].attach("\"Well... I suppose you could.  I already don't like putting you in this much danger, though.  If a Syndicate patrol catches you messing with our territory, they'll assume you're with the Branch and shoot you on sight.  But the Branch won't view you as being on their side, either.  And the police...\"\n\n", 5);
+                result.screens[10].attach("You already knew you were signing up for dangerous business when you booked your flight for the Metropolis.  You're more concerned about other people getting caught in the crossfire.  When " + Tanaka() + " talks about 'making chaos' in Syndicate territory, " + heShe(5) + " isn't just talking about petty vandalism, is " + heShe(5) + "?\n\n");
+                result.screens[10].attach("\"No, it isn't enough to just be a nuisance.  You'll have to cause some actual damages.  Break their windows, destroy their merchandise, empty their cash registers.  And then run.\"", 5);
+
+                result.emotions[11] = new String[]{"Smug"};
+                result.screens[11].attach("\"Don't worry, you don't have to actually hurt anyone.  Our goal is to damage the Syndicate's finances, and nothing more than that.\"\n\n", 5);
+                result.screens[11].attach("A lot of innocent lives are going to get disrupted in the process, though.  You've seen the small shops that line the streets of the Autorimessa district.  They're staffed by regular people who've done no wrongdoing aside from happening to run their business in a territory claimed by two warring groups of criminals.\n\n");
+                result.screens[11].attach("This plan is going to hurt them.  They need money for their daily expenses, for their medical bills, for their retirement plans...");
+
+                result.emotions[12] = new String[]{"Happy"};
+                result.screens[12].attach("\"That's just how things work in this part of the world.  Back home, we'd pay taxes, and some of those taxes would go to the police.  Over here, they pay 'protection' money to the local crime families instead, and the crime families are the ones who keep the peace.  It's the same difference either way.\"\n\n", 5);
+                result.screens[12].attach("It really doesn't make a difference whether it's the Branch or the Syndicate extorting money from them?\n\n");
+                result.screens[12].attach("\"If anything, they might even be better off under the Syndicate's control.  There are actually a bunch of different 'Branches', and feuds between them do happen.  One family will cause offense to another one, and then suddenly they'll be fighting a war of extermination against each other, with the common people getting caught in the crossfire.  The Syndicate doesn't do stuff like that.\"", 5);
+
+                result.emotions[13] = new String[]{"Shifty"};
+                result.screens[13].attach("It's hard to believe that being forced into an extortion racket actually works out to these people's benefit.\n\n");
+                result.screens[13].attach("\"Well, that's just the kind of society they've built here.  The crime families can only thrive because of the funding they receive from the people in their territory.  And in order to beat the crime families, you have to be willing to attack their 'tax base'.  The locals got themselves involved in this the moment they started paying the Branch to leave them alone.", 5);
+
+                result.characters[14] = new String[0];
+                result.screens[14].attach("So, which is it?  Is the Syndicate's extortion ultimately irrelevant to the people living here?  Or is it good for them?  Or is it bad, but they deserve it anyway?\n\n");
+                result.screens[14].attach("If terrorizing the locals were really okay, then a single justification would be enough to prove it so.  But when you have three contradictory justifications, it just makes all of them look weaker.\n\n");
+                result.screens[14].attach("Then again, " + Tanaka() + " is fighting for survival.  If " + heShe(5) + " can't find a way to free " + himHer(5) + "self from the Syndicate, then " + heShe(5) + "'ll die.  Maybe it isn't fair to expect " + himHer(5) + " to act within rigid ethical constraints here.  This is a tough position to be in, and it wasn't " + hisHer(5) + " choice to end up in it.\n\n");
+                result.screens[14].attach("If you want to help " + himHer(5) + ", then you'll have to get your own hands dirty, too.  The alternative is to just leave " + himHer(5) + " to " + hisHer(5) + " fate.");
+
+                result.characters[15] = new String[]{"tanaka"};
+                result.outfits[15] = new String[]{"Syndicate"};
+                result.emotions[15] = new String[]{"Neutral"};
+                result.screens[15].attach("What matters is whether it will get " + Tanaka() + " closer to " + hisHer(5) + " freedom.\n\n");
+                result.screens[15].attach("\"It will.  If I'm in charge of a district, then I'll need to be free to go there and manage things personally.  The higher-ups will have no choice but to keep me on a looser leash.  And that means more chances for the two of us to meet up and work together.  Plus, the more authority I have, the less I need to worry about the other commanders finding my actions suspicious.\"\n\n", 5);
+                result.screens[15].attach("It feels strange to be getting " + Tanaka() + " even more deeply involved with the Syndicate, but if bringing down the entire organization isn't an option, then making use of " + hisHer(5) + " position here is the next best thing.\n\n");
+                result.screens[15].attach("\"Yeah.  If it goes well, I might even be able to get a face-to-face meeting with " + Artemis() + ".\"", 5);
+
+                result.emotions[16] = new String[]{"Uncomfy"};
+                result.screens[16].attach("Is it that rare for Syndicate members to be able to meet their leader?\n\n");
+                result.screens[16].attach("\"Yeah.  " + Artemis() + " never actually commands us in person.  Only of few of the very highest-ranking commanders have actually talked with " + himHer(17) + " directly.  The note I received during my 'recruitment' is the closest thing to direct communication I've had with " + himHer(17) + ".  It's rumored that " + heShe(17) + " doesn't even live in this country.\"\n\n", 5);
+                result.screens[16].attach("That's too bad.  Taking down " + Artemis() + " seems like the most straightforward way to throw the Syndicate into chaos.  " + Tanaka() + " could go into hiding, and there wouldn't be anybody else to punish " + himHer(5) + " for desertion.\n\n");
+                result.screens[16].attach("\"Well, maybe...\"", 5);
+
+                result.emotions[17] = new String[]{"Neutral"};
+                result.screens[17].attach("\"I just want to know how " + Artemis() + " knows so much about all of us.  It's not just me.  Every single Syndicate soldier says the same thing.  They all had secrets they hadn't ever told to anybody else.  And yet " + Artemis() + " somehow knew what they had been hiding.\"\n\n", 5);
+                result.screens[17].attach("What could even allow " + himHer(17) + " to have that kind of knowledge?  Some sort of mind-reading technology?\n\n");
+                result.screens[17].attach("\"I don't know.  And until we figure it out, I don't want to outright defy " + himHer(17) + ".  We still know too little about what " + heShe(17) + " can do.\"\n\n", 5);
+                result.screens[17].attach("And what's why " + Tanaka() + " wants to meet " + Artemis() + " face-to-face?\n\n");
+                result.screens[17].attach("\"Yeah.  If I can just meet " + himHer(17) + ", then... maybe I'll be able to pick up some sort of clue.  There has to be some reason " + heShe(17) + "'s so reluctant to show " + hisHer(17) + " face to to us.\"", 5);
+
+                result.emotions[18] = new String[]{"Smug"};
+                result.screens[18].attach("\"And with you here, I think I have a good chance of pulling it off.  After everything you went through to track me down, this should be no problem at all.\"\n\n", 5);
+                result.screens[18].attach("Well, it's good that " + Tanaka() + " has confidence in you.\n\n");
+                result.screens[18].attach("\"And I'll be working hard on my end, too.  I know we can do this.\"", 5);
+
+                result.characters[19] = new String[0];
+                result.backgrounds[19] = "metropolis";
+                result.screens[19].attach("You and " + Tanaka() + " take a few minutes for finalize your plans for which streets to target and which escape routes will work best in case you end up running into a Syndicate or Branch patrol.  But eventually, another commander wants to have a private discussion with " + Tanaka() + ", and you're forced to cut your strategy meeting short.\n\n");
+                result.screens[19].attach("Back on the street, you pull out your phone and look at the addresses " + Tanaka() + " gave you.  It doesn't feel good to know that you're going to be causing trouble for the people who live and work there, but if everything goes smoothly, you won't have to do this for long.  Maybe you can think of a way to make it up to them later.\n\n");
+                result.screens[19].attach("For now, it's time to put your plan into motion.");
+            }
+        }
+        return result;
+    }
 	
 	public static String resolveAction(Action a, Boolean takeEffect, Boolean barMove) {
 		BigInteger healthStorage = simulatedHealth;
@@ -13394,6 +13731,9 @@ public class Game {
 		BigInteger gainedGoal = gainedTypes[2];
 		staminaSpent = staminaSpent.add(getBodyArmorAdjustment(a));
 		healthSpent = healthSpent.subtract(getBodyArmorAdjustment(a).divide(BigInteger.valueOf(3)));
+        if (equipmentRoutine() == RoutineElements.UNIFORM && a.ownSpot.ownLocale == Locale.METROPOLIS && healthSpent.compareTo(BigInteger.ZERO) > 0) {
+            healthSpent = BigInteger.ZERO;
+        }
 		if (staminaSpent.compareTo(BigInteger.ZERO) < 0) {
 			result = "+" + format(staminaSpent.negate()) + " Stamina";
 		} else if (staminaSpent.compareTo(BigInteger.ZERO) > 0) {
@@ -13413,7 +13753,7 @@ public class Game {
 		} else if (a.baseCost.compareTo(BigInteger.ZERO) < 0) {
 			result = "Stamina already at max";
 		}
-		if (a.healthCost.compareTo(BigInteger.ZERO) != 0) {
+		if (getHealthCost(a).compareTo(BigInteger.ZERO) != 0) {
 			if (!result.isEmpty()) {
 				result += ", ";
 			}
@@ -13446,12 +13786,17 @@ public class Game {
 		Goal usedGoal = getVisibleGoal(a, false);
 		Goal previousGoal = usedGoal;
 		int[] finishedGoal = new int[0];
+        BigInteger powerProgress = BigInteger.ZERO;
 		Boolean goalMatch = getVisibleGoal(currentPlaythrough.currentLocale.currentSpot.currentAction, false) != null && usedGoal != null && getVisibleGoal(currentPlaythrough.currentLocale.currentSpot.currentAction, false).index == usedGoal.index;
 		boolean numericalGoalProgress = !gainedGoal.equals(BigInteger.ZERO);
 		if (usedGoal != null) {
+            powerProgress = extraProgress[usedGoal.index];
 			boolean allDone = false;
-			while (!allDone && gainedGoal.add(simulatedGoals[usedGoal.index]).subtract(usedGoal.previousRequirements).compareTo(usedGoal.requirement) >= 0) {
+			while (!allDone && gainedGoal.add(powerProgress).add(simulatedGoals[usedGoal.index]).subtract(usedGoal.previousRequirements).compareTo(usedGoal.requirement) >= 0) {
 				boolean newlyCompleted = false;
+                if (takeEffect && barMove) {
+                    extraProgress[usedGoal.index] = BigInteger.ZERO;
+                }
 				if (simulatedGoals[usedGoal.index].subtract(usedGoal.previousRequirements).compareTo(usedGoal.requirement) < 0) {
 					if (takeEffect && barMove) {
 						newlyCompleted = true;
@@ -13486,7 +13831,8 @@ public class Game {
 						}
 						newFinished[finishedGoal.length] = usedGoal.index;
 						finishedGoal = newFinished;
-						gainedGoal = gainedGoal.subtract(usedGoal.requirement.add(usedGoal.previousRequirements).subtract(simulatedGoals[usedGoal.index]));
+						gainedGoal = gainedGoal.add(powerProgress).subtract(usedGoal.requirement.add(usedGoal.previousRequirements).subtract(simulatedGoals[usedGoal.index]));
+                        powerProgress = powerProgress.add(extraProgress[usedGoal.getNextGoal().index]);
 					}
 					usedGoal = usedGoal.getNextGoal();
 				} else {
@@ -13516,6 +13862,11 @@ public class Game {
 				}
 				if (takeEffect && barMove && currentGoal != null && currentGoal.index == previousGoal.index) {
 					changeGoal(usedGoal);
+                    if (usedGoal.opposition.compareTo(BigInteger.ZERO) > 0) {
+                        goalProgressBar.setBackground(attributeColors[6]);
+                    } else {
+                        goalProgressBar.setBackground(Color.BLACK);
+                    }
 				}
 			}
 		}
@@ -13528,8 +13879,11 @@ public class Game {
                         lastAction = false;
                     }
                 }
+                if (powerProgress.compareTo(BigInteger.ZERO) > 0) {
+                    result += " plus " + format(powerProgress) + " Power bonus";
+                }
                 if (lastAction) {
-                    add(RIGHT, " versus " + format(usedGoal.opposition, gainedGoal) + " opposition = " + format(gainedGoal.subtract(usedGoal.opposition)));
+                    result += " versus " + format(usedGoal.opposition, gainedGoal) + " opposition = " + format(gainedGoal.add(extraProgress[usedGoal.index]).subtract(usedGoal.opposition));
                 }
             }
 		}
@@ -14490,10 +14844,90 @@ public class Game {
             } else {
                 result.attach("You meet up with " + Tanaka() + " and discuss the situation here.");
                 if (!recentCompletion) {
-                    result.attach("\n\n\"I still can hardly believe that you came to save me...\"", 5);
+                    if (stanceRoutine() == RoutineElements.LONER) {
+                        result.attach("\n\n\"When I'm with you, I can really believe that this will all be over soon...\"", 5);
+                    } else {
+                        result.attach("\n\n\"I still can hardly believe that you came to save me...\"", 5);
+                    }
                 }
             }
 			break;
+        case TROUBLEEARLY:
+            if (getGoalLevel(29, false) == 0) {
+                result.attach("You go to a shop in the Syndicate's territory, then smash your way inside and cause some damage before making your escape.  You manage to grab some valuables in the process.");
+            } else {
+                result.attach("You pick a shop just beyond the edge of " + Tanaka() + "'s territory and smash the place up.  They should be more eager to take the Syndicate's next offer, and you come away a little richer.");
+            }
+            break;
+        case TROUBLELATE:
+            if (equipmentRoutine() == RoutineElements.UNIFORM) {
+                result.attach("You collect some money from the local businesses.  As long as you're dressed in this uniform, the owners know better than to resist.");
+            } else {
+                result.attach("You grab some more valuables and then make a hurried escape before the gangs or the police can arrive.");
+            }
+            break;
+        case COORDINATE:
+            if (stanceRoutine() == RoutineElements.TRIUMPHANT) {
+                result.attach("You 'strategize' with " + Tanaka() + ", but really it's just an excuse to spend time in the few free minutes " + heShe(5) + " has while managing " + hisHer(5) + " new territory.  It's fun.");
+            } else {
+                result.attach("You meet up with " + Tanaka() + " under the excuse of reporting to " + himHer(5) + " about what's happening in " + hisHer(5) + " territory.  You keep getting interrupted, but the other reports you overhear give you a better picture of what's going on.");
+            }
+            if (!recentCompletion) {
+                if (equipmentRoutine() == RoutineElements.UNIFORM) {
+                    result.attach("\n\n\"You're getting good at blending in here...\"", 5);
+                } else {
+                    result.attach("\n\n\"I need to meet with another commander soon, but maybe we'll have a few minutes to ourselves afterward...\"", 5);
+                }
+            }
+            break;
+        case SPLURGE:
+            if (equipmentRoutine() == RoutineElements.OSTENTATIOUS) {
+                result.attach("Dressed like this, you have no trouble attracting attention.");
+            } else {
+                result.attach("You buy a bunch of name-brand useless stuff.  You have no idea what you'll do with all of it.");
+            }
+            break;
+        case BINGE:
+            if (stanceRoutine() == RoutineElements.SELFDESTRUCTIVE) {
+                result.attach("You can't quite remember the details, but you're pretty sure you were the center of attention tonight.");
+            } else {
+                result.attach("You buy a few rounds of drinks for everybody, along with various packets of suspicious pills and powders which get discreetly flushed down the toilet at the soonest opportunity.");
+            }
+            break;
+        case MINGLE:
+            if (stanceRoutine() == RoutineElements.VULNERABLE) {
+                result.attach("You share your problems with " + Lancia() + ".  " + HeShe(6) + " seems eager to have you in " + hisHer(6) + " debt.");
+            } else {
+                result.attach("You get to know " + Lancia() + "'s goons.  Most of them seem surprisingly nice.");
+            }
+            if (!recentCompletion) {
+                if (equipmentRoutine() == RoutineElements.OSTENTATIOUS) {
+                    result.attach("\n\n\"You look like you have more money than you know what to do with!  Why don't you let us help you with that?\"", 6);
+                } else {
+                    result.attach("\n\n\"You've got some interesting skills.  We can definitely help each other out.\"", 6);
+                }
+            }
+            break;
+        case METEMPIRE:
+            int metLevel = getGoalLevel(33, true);
+            if (metLevel == 0) {
+                result.attach("You make arrangements with the local Branch goons to leave this neighborhood alone.");
+            } else if (metLevel == 1) {
+                result.attach("With the help brought in from abroad, you can extend your protection to a larger area.");
+            } else {
+                result.attach("You set about putting someone else in charge to take care of any disputes next time you're away from the country.");
+            }
+            break;
+        case HOMEEMPIRE:
+            int homeLevel = getGoalLevel(34, true);
+            if (homeLevel == 0) {
+                result.attach("Now that you've seen how the Branch operates, you have some new ideas for how to keep the local gangs out of trouble.");
+            } else if (homeLevel == 1) {
+                result.attach("The gangs back home seem to place more importance on whether their leaders are able to handle themselves in a fight.  You're happy to oblige.");
+            } else {
+                result.attach("You returned to find more recruits who were eager and honored to meet you.  It's a nice feeling.");
+            }
+            break;
 		case LABOREARLY:
 			result.attach("You work hard for little pay.");
 			break;
@@ -14722,6 +15156,8 @@ public class Game {
 			result = "Man is both propellant and payload.\n\nWhen spending 40 or more Stamina on an action, goals and attributes gain +100 Stamina worth of progress.";
 		} else if (e == RoutineElements.OSTENTATIOUS) {
 			result = "The key to social success is to be so memorable that people are thinking about you even when you're not around.\n\nx1.5 action Stamina costs, and at the end of each day, all discovered relationships in the same city gain 60 Stamina worth of progress.";
+        } else if (e == RoutineElements.UNIFORM) {
+            result = "It seems like " + Tanaka() + " enjoys dressing you up.\n\nIn the Metropolis, Health is never lost from performing actions.  However, for actions not associated with " + Tanaka() + "'s relationship, x0 goal and relationship progress.";
 		} else if (e == RoutineElements.HEALTHY) {
 			result = "Everyone's body tells a story.  At this point, your story is a short one.\n\n100 maximum Health.\nAfter changing to a new Body state, it's no longer possible to return to ones higher on this list!";
 		} else if (e == RoutineElements.SCARRED) {
@@ -14814,6 +15250,12 @@ public class Game {
 			} else {
 				result = "Do you really have a story worth telling?\n\nUnlocked through interacting with " + currentPlaythrough.personNames[1] + ".";
 			}
+        } else if (e == Achievement.EMPIRE) {
+            if (getGoalLevel(32, true) >= 1) {
+                result = "The world is yours.\n\nGrants +50 Meaning of Life for every level of 'Build your empire' completed, added up across all cities.";
+            } else {
+                result = "The world turns, and you're forced to turn with it.\n\nUnlocked by progressing the story.";
+            }
 		} else if (e == Achievement.BELOVED) {
 			result = "Everybody has a different piece of the big puzzle of reality.\n\nGrants Meaning of Life equal to the sum of your Relationship levels.";
 		} else if (e == Achievement.POLYMATH) {
@@ -15211,11 +15653,25 @@ public class Game {
 		if (a.requiredFinances > 0 && a.requiredFinances > getAttributeLevel(2, false).intValue()) {
 			return false;
 		}
+        if (a.isEmpire()) {
+            boolean matched = false;
+            for (Action b : Action.values()) {
+                if (a != b && b.isEmpire()) {
+                    if (getGoalLevel(b.ownGoal.index, true) >= getGoalLevel(a.ownGoal.index, true)) {
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if (!matched) {
+                return false;
+            }
+        }
 		BigInteger healthIncreaseEffect = BigInteger.ZERO;
-		if (t.placement == 0 && !a.healthCost.equals(BigInteger.ZERO)) {
+		if (t.placement == 0 && !getHealthCost(a).equals(BigInteger.ZERO)) {
 			healthIncreaseEffect = maxHealth().subtract(currentPlaythrough.yesterdayMaxHealth);
 		}
-		if (getHealthEffect(a).subtract(getBodyArmorAdjustment(a).divide(BigInteger.valueOf(3))).compareTo(simulatedHealth.add(healthIncreaseEffect)) > 0) {
+		if (getTotalHealthEffect(a).compareTo(simulatedHealth.add(healthIncreaseEffect)) > 0) {
 			return false;
 		}
 		return true;
@@ -16185,13 +16641,37 @@ public class Game {
 		case PARTYLATE:
 			result = "Identify the most important people here and use this chance to get close to them.";
 			break;
+        case TROUBLEEARLY:
+            result = "Working alone is harder.";
+            break;
+        case TROUBLELATE:
+            result = "If they cooperate, you can skip the 'smash' part.";
+            break;
+        case COORDINATE:
+            result = "Thanks to you, " + Tanaka() + " has a bit more freedom to move.";
+            break;
+        case SPLURGE:
+            result = "It doesn't matter much what you spend your money on, as long as you're seen spending it.";
+            break;
+        case BINGE:
+            result = "Making a fool of yourself is surprisingly hard work.";
+            break;
+        case MINGLE:
+            result = "Try very hard to look like you're not trying.";
+            break;
+        case METEMPIRE:
+            result = "It's useful to have people in your debt.";
+            break;
+        case HOMEEMPIRE:
+            result = "After seeing the gangs in Metropolis, the ones here don't seem so tough.";
+            break;
 		default:
 			result = "No description found.";
 			break;
 		}
 		if (!actionIsAllowed(a, currentTimeSlot)) {
 			BigInteger totalHealthCost = BigInteger.ZERO;
-			if (!a.healthCost.equals(BigInteger.ZERO)) {
+			if (!getHealthCost(a).equals(BigInteger.ZERO)) {
 				totalHealthCost = getTotalHealthEffect(a);
 			}
 			boolean explained = false;
@@ -16294,7 +16774,7 @@ public class Game {
 				explained = true;
 				result += "\nRequires Lv " + a.requiredFinances + " Finances.";
 			}
-			if (!a.healthCost.equals(BigInteger.ZERO) && totalHealthCost.compareTo(simulatedHealth) > 0) {
+			if (!getHealthCost(a).equals(BigInteger.ZERO) && totalHealthCost.compareTo(simulatedHealth) > 0) {
 				explained = true;
 				result += "\n" + format(simulatedHealth, totalHealthCost) + "/" + format(totalHealthCost) + " required Health";
 			}
@@ -16306,6 +16786,29 @@ public class Game {
 				explained = true;
 				result += "\nMust learn the language first.";
 			}
+            if (a.isEmpire()) {
+                boolean matched = false;
+                for (Action b : Action.values()) {
+                    if (a != b && b.isEmpire()) {
+                        if (getGoalLevel(b.ownGoal.index, true) >= getGoalLevel(a.ownGoal.index, true)) {
+                            matched = true;
+                            break;
+                        }
+                    }
+                }
+                if (!matched) {
+                    explained = true;
+                    String requirement = getVisibleGoal(a.ownGoal.index, true).name;
+                    String last = requirement.substring(requirement.length()-1);
+                    if (last.equals("2")) {
+                        requirement = "Build your empire";
+                    } else {
+                        int newLast = Integer.parseInt(last) - 1;
+                        requirement = requirement.substring(0, requirement.length()-1) + newLast;
+                    }
+                    result += "\nMust complete '" + requirement + "' in at least one other city first";
+                }
+            }
 			if (!explained) {
 				result += "\nAction not currently possible.";
 			}
@@ -16798,7 +17301,10 @@ public class Game {
 			} else if (equipmentRoutine() == RoutineElements.LARCENY && simulatorType == 2) {
 				runningTotal = runningTotal.multiply(BigInteger.valueOf(3)).divide(BigInteger.valueOf(2));
 				add(RIGHT, "\n" + format(runningTotal) + " after " + RoutineElements.LARCENY.name + " (x1.5)", 0);
-			}
+			} else if (equipmentRoutine() == RoutineElements.UNIFORM && simulatorType != 1 && currentStatsCategory.currentStats.placement != 5) {
+                runningTotal = BigInteger.ZERO;
+                add(RIGHT, "\n" + format(runningTotal) + " after " + RoutineElements.UNIFORM.name + " (x0)", 5);
+            }
 			if (bodyRoutine() == RoutineElements.TRAINED && simulatorType == 1 && currentStatsCategory.currentStats.placement == 0) {
 				runningTotal = runningTotal.add(runningTotal);
 				add(RIGHT, "\n" + format(runningTotal) + " after " + RoutineElements.TRAINED.name + " (x2)", 4);
@@ -17250,18 +17756,31 @@ public class Game {
 						add(RIGHT, "\n+" + format(projectedProgress[2]) + " goal progress");
 					}
 					Goal usedGoal = getVisibleGoal(getDisplayedAction(), false);
-					if (projectedProgress[2].compareTo(usedGoal.requirement.add(usedGoal.previousRequirements).subtract(simulatedGoals[usedGoal.index])) >= 0) {
-						boldAdd(RIGHT, " [Complete!]");
+                    boolean firstAction = true;
+                    boolean lastAction = true;
+                    for (int i = 0; i < 6; i++) {
+                        if (getVisibleGoal(currentPlaythrough.weeklyActions[weekDayNumber()][i], false) == usedGoal) {
+                            if (i < currentTimeSlot.placement) {
+                                firstAction = false;
+                            } else if (i > currentTimeSlot.placement) {
+                                lastAction = false;
+                            }
+                        }
+                    }
+					if (projectedProgress[2].add(extraProgress[usedGoal.index]).compareTo(usedGoal.requirement.add(usedGoal.previousRequirements).subtract(simulatedGoals[usedGoal.index])) >= 0) {
+                        if (firstAction && extraProgress[usedGoal.index].compareTo(BigInteger.ZERO) > 0) {
+                            add(RIGHT, " plus " + format(extraProgress[usedGoal.index]) + " Power bonus");
+                        }
+                        boldAdd(RIGHT, " [Complete!]");
 					} else {
                         if (usedGoal.opposition.compareTo(BigInteger.ZERO) > 0) {
-                            boolean lastAction = true;
-                            for (int i = currentTimeSlot.placement+1; i < 6; i++) {
-                                if (getVisibleGoal(currentPlaythrough.weeklyActions[weekDayNumber()][i], false) == usedGoal) {
-                                    lastAction = false;
+                            if (firstAction) {
+                                if (extraProgress[usedGoal.index].compareTo(BigInteger.ZERO) > 0) {
+                                    add(RIGHT, " plus " + format(extraProgress[usedGoal.index]) + " Power bonus");
                                 }
                             }
                             if (lastAction) {
-                                add(RIGHT, " versus " + format(usedGoal.opposition, projectedProgress[2]) + " opposition = " + format(projectedProgress[2].subtract(usedGoal.opposition)));
+                                add(RIGHT, " versus " + format(usedGoal.opposition, projectedProgress[2]) + " opposition = " + format(projectedProgress[2].add(extraProgress[usedGoal.index]).subtract(usedGoal.opposition)));
                             }
                         }
                     }
@@ -17855,7 +18374,11 @@ public class Game {
 			if (getGoalLevel(1, dayStart) >= 1) {
 				return true;
 			}
-		}
+		} else if (index == 6) {
+            if (getGoalLevel(31, dayStart) >= 1) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -17976,6 +18499,26 @@ public class Game {
 		assembleWindow();
 		mainPanel.repaint();
 	}
+
+    public static void setPowerBonus() {
+        Locale localeStorage = currentPlaythrough.currentLocale;
+        for (int i = 1; i < totalGoals; i++) {
+            extraProgress[i] = BigInteger.ZERO;
+        }
+        if (getAttributeLevel(6, true).compareTo(BigInteger.ZERO) > 0) {
+            for (Action a : Action.values()) {
+                currentPlaythrough.currentLocale = a.ownSpot.ownLocale;
+                Goal usedGoal = getVisibleGoal(a, true);
+                if (usedGoal != null && usedGoal.opposition.compareTo(BigInteger.ZERO) > 0 && extraProgress[usedGoal.index].equals(BigInteger.ZERO) && actionIsVisible(a, TimeSlot.values()[a.availableSlot])) {
+                    extraProgress[usedGoal.index] = getAttributeLevel(6, true).multiply(BigInteger.valueOf(5000)).multiply(focusMultiplier()).divide(HUNDRED);
+                    if (a.relationship >= 0) {
+                        extraProgress[usedGoal.index] = extraProgress[usedGoal.index].multiply(relationshipMultiplier(a.relationship)).divide(HUNDRED);
+                    }
+                }
+            }
+        }
+        currentPlaythrough.currentLocale = localeStorage;
+    }
 	
 	public static void checkMOL() {
 		remainingMOL = todayMOL.add(currentPlaythrough.startMOL);
@@ -19343,8 +19886,8 @@ public class Game {
 	}
 	
 	public static BigInteger getHealthEffect(Action a) {
-		BigInteger healthSpent = a.healthCost;
-		if (a.healthCost.compareTo(BigInteger.ZERO) > 0) {
+		BigInteger healthSpent = getHealthCost(a);
+		if (getHealthCost(a).compareTo(BigInteger.ZERO) > 0) {
 			healthSpent = healthSpent.subtract(getAttributeLevel(3, false).multiply(HUNDRED.add(BigInteger.valueOf(50L*currentPlaythrough.upgradeLevels[3]))));
 			if (healthSpent.compareTo(BigInteger.ZERO) < 0) {
 				healthSpent = BigInteger.ZERO;
@@ -19357,6 +19900,9 @@ public class Game {
 	}
 	
 	public static BigInteger getTotalHealthEffect(Action a) {
+        if (equipmentRoutine() == RoutineElements.UNIFORM && a.ownSpot.ownLocale == Locale.METROPOLIS && getHealthEffect(a).compareTo(BigInteger.ZERO) > 0) {
+            return BigInteger.ZERO;
+        }
 		return getHealthEffect(a).subtract(getBodyArmorAdjustment(a).divide(BigInteger.valueOf(3)));
 	}
 	
@@ -19388,6 +19934,11 @@ public class Game {
 					setGoalBar(g.nextGoal, dayStart);
 				}
 			}
+            if (g.opposition.compareTo(BigInteger.ZERO) > 0) {
+                goalProgressBar.setBackground(attributeColors[6]);
+            } else {
+                goalProgressBar.setBackground(Color.BLACK);
+            }
 		}
 	}
 	
@@ -19488,7 +20039,10 @@ public class Game {
                 }
                 result += " total)";
             }
-		}
+		} else if (index == 6) {
+            int amount = currentLevel.intValue()*50;
+            result = "+" + amount + " daily Stamina worth of progress for all known opposed goals";
+        }
 		return result;
 	}
 	
@@ -19566,7 +20120,7 @@ public class Game {
 			}
 			break;
         case TROUBLEEARLY:
-            a.ownGoal.toolTip = "Unlock a new Action involving " + Tanaka();
+            //a.ownGoal.toolTip = "Unlock a new Action involving " + Tanaka();
             break;
 		default:
 			break;
@@ -19835,6 +20389,20 @@ public class Game {
 		}
 		return "mistress";
 	}
+
+    public static String kingQueen(int i) {
+        if (i == -1) {
+            if (currentPlaythrough.ownGender.presentation() == Gender.MALE) {
+                return "king";
+            } else {
+                return "queen";
+            }
+        }
+        if (currentPlaythrough != null && currentPlaythrough.personGenders[i].presentation() == Gender.MALE) {
+            return "king";
+        }
+        return "queen";
+    }
 
     public static String SirMaam(int i) {
         if (i == -1) {
@@ -20619,6 +21187,25 @@ public class Game {
 		}
 		return result;
 	}
+
+    public static int languageLearningInterval(Playthrough p) {
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < p.archivedActions.length; i++) {
+            for (int j = 0; j < 7; j++) {
+                for (int k = 0; k < 6; k++) {
+                    if (p.archivedActions[i][j][k] != null && p.archivedActions[i][j][k].isLanguage()) {
+                        if (start == 0) {
+                            start = i * 7 + j;
+                        }
+                        end = i * 7 + j;
+                    }
+
+                }
+            }
+        }
+        return end - start;
+    }
 	
 	public static Epoch getEpoch() {
         if (currentPlaythrough.currentLocale == Locale.COLLEGETOWN && (currentPlaythrough.personStatus[5] == Locale.COLLEGETOWN || getGoalLevel(28, true) > 0) && (getGoalLevel(1, true) > 1 || getGoalLevel(2, true) > 1 || getGoalLevel(3, true) > 1 || getGoalLevel(6, true) > 1)) {
@@ -20658,6 +21245,8 @@ public class Game {
 	public static String Tanaka() {
 		return currentPlaythrough.personNames[5];
 	}
+
+    public static String Lancia() { return currentPlaythrough.personNames[6]; }
 
     public static String Lophii() { return currentPlaythrough.personNames[8]; }
 
